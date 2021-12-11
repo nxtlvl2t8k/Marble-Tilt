@@ -9,24 +9,25 @@
 /* Begin PBXBuildFile section */
 		D57C3F5D273792DB00FDB95B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C3F5C273792DB00FDB95B /* AppDelegate.swift */; };
 		D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F5E273792DB00FDB95B /* GameScene.sks */; };
-		D57C3F61273792DB00FDB95B /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F60273792DB00FDB95B /* Actions.sks */; };
 		D57C3F63273792DB00FDB95B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C3F62273792DB00FDB95B /* GameScene.swift */; };
 		D57C3F65273792DB00FDB95B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C3F64273792DB00FDB95B /* GameViewController.swift */; };
 		D57C3F68273792DB00FDB95B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F66273792DB00FDB95B /* Main.storyboard */; };
 		D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F69273792DC00FDB95B /* Assets.xcassets */; };
 		D57C3F6D273792DC00FDB95B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F6B273792DC00FDB95B /* LaunchScreen.storyboard */; };
+		D57C3F742737BB9F00FDB95B /* level1.txt in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F732737BB9F00FDB95B /* level1.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D57C3F59273792DB00FDB95B /* Marble Tilt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Marble Tilt.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D57C3F5C273792DB00FDB95B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D57C3F5E273792DB00FDB95B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		D57C3F60273792DB00FDB95B /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		D57C3F62273792DB00FDB95B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		D57C3F64273792DB00FDB95B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		D57C3F67273792DB00FDB95B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D57C3F69273792DC00FDB95B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D57C3F6C273792DC00FDB95B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D57C3F732737BB9F00FDB95B /* level1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level1.txt; sourceTree = "<group>"; };
+		D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Marble-Tilt-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,12 +62,13 @@
 			children = (
 				D57C3F5C273792DB00FDB95B /* AppDelegate.swift */,
 				D57C3F5E273792DB00FDB95B /* GameScene.sks */,
-				D57C3F60273792DB00FDB95B /* Actions.sks */,
 				D57C3F62273792DB00FDB95B /* GameScene.swift */,
 				D57C3F64273792DB00FDB95B /* GameViewController.swift */,
 				D57C3F66273792DB00FDB95B /* Main.storyboard */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
 				D57C3F6B273792DC00FDB95B /* LaunchScreen.storyboard */,
+				D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */,
+				D57C3F732737BB9F00FDB95B /* level1.txt */,
 			);
 			path = "Marble Tilt";
 			sourceTree = "<group>";
@@ -129,11 +131,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D57C3F742737BB9F00FDB95B /* level1.txt in Resources */,
 				D57C3F68273792DB00FDB95B /* Main.storyboard in Resources */,
 				D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */,
 				D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */,
 				D57C3F6D273792DC00FDB95B /* LaunchScreen.storyboard in Resources */,
-				D57C3F61273792DB00FDB95B /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,12 +299,14 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2RUJ33TRMQ;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Marble-Tilt-Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationLandscapeRight;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -312,7 +316,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -325,12 +329,14 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2RUJ33TRMQ;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Marble-Tilt-Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationLandscapeRight;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -340,7 +346,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};
