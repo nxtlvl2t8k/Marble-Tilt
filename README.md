@@ -3,10 +3,9 @@
 Roll Marbles into set positions on screen
 
 Paul Hudson Hacking with Swift - project 26
+Took most of the code and created my own spin on it.
 
 ![Simulator Screen Shot - iPad mini (6th generation) - 2021-12-11 at 07 00 07](https://user-images.githubusercontent.com/16903935/145681241-49b2f4ad-07ea-4b30-a81e-1e7834ce1459.png)
-
-Took most of the code and created my own spin on it.
 
 First, I changed all the walls to silver balls (multiple balls on screen, I can collide with vortex but i cant create a collision with vortex (freeze ball over vortex)
 
