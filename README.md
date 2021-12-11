@@ -1,10 +1,10 @@
 # Marble-Tilt
 
 Roll Marbles into set positions on screen
-![Simulator Screen Shot - iPad mini (6th generation) - 2021-12-11 at 07 00 07](https://user-images.githubusercontent.com/16903935/145681241-49b2f4ad-07ea-4b30-a81e-1e7834ce1459.png)
-
 
 Paul Hudson Hacking with Swift - project 26
+
+![Simulator Screen Shot - iPad mini (6th generation) - 2021-12-11 at 07 00 07](https://user-images.githubusercontent.com/16903935/145681241-49b2f4ad-07ea-4b30-a81e-1e7834ce1459.png)
 
 Took most of the code and created my own spin on it.
 
@@ -14,11 +14,11 @@ Second, several Vortex become a Smiley Face Picture
 
 Third, Player is red ball that can freeze ball over vortex and create new player.
 
-Items im working on, 
-  finish - when all vortex are covered game is over, new level/picture 
-  gesture recognizer shake - when user shakes ipad marbles will unfreeze from vortex and free move again 
-  new levels/pictures
-  size of picture (reduce size of marble and screen so more complex pictures can be created. more marbles
+Items im working on,
+finish - when all vortex are covered game is over, new level/picture 
+gesture recognizer shake - when user shakes ipad marbles will unfreeze from vortex and free move again 
+new levels/pictures 
+size of picture (reduce size of marble and screen so more complex pictures can be created. more marbles
 
 Stretch goal
 ![IMG_1999](https://user-images.githubusercontent.com/16903935/145681104-afd0d231-0fb5-4c9d-9c7e-9fee667512ef.jpeg)
