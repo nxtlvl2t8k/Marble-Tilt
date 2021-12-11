@@ -12,6 +12,12 @@ Second, several Vortex become a Smiley Face Picture
 
 Third, Player is red ball that can freeze ball over vortex and create new player.
 
-Items im working on, finish - when all vortex are covered game is over, new level/picture gesture recognizer shake - when user shakes ipad marbles will unfreeze from vortex and free move again new levels/pictures
+Items im working on, 
+  finish - when all vortex are covered game is over, new level/picture 
+  gesture recognizer shake - when user shakes ipad marbles will unfreeze from vortex and free move again 
+  new levels/pictures
+  size of picture (reduce size of marble and screen so more complex pictures can be created. more marbles
 
-size of picture (reduce size of marble and screen so more complex pictures can be created. more marbles
+Stretch goal
+![IMG_1999](https://user-images.githubusercontent.com/16903935/145681104-afd0d231-0fb5-4c9d-9c7e-9fee667512ef.jpeg)
+![IMG_1998](https://user-images.githubusercontent.com/16903935/145681107-a5811968-233d-4cc7-a9c1-29fd2e402d3f.jpeg)
