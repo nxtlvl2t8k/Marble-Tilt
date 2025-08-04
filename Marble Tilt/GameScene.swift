@@ -47,6 +47,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreLabel.text = "Score: \(score)"
         }
     }
+    
     override func didMove(to view: SKView) {
         let background = SKSpriteNode(imageNamed: "background.jpg")
         background.position = CGPoint(x: 512, y: 384)
@@ -101,8 +102,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     #endif
     }
 
+    func createVortex(at position: CGPoint, count: Int) {
+        let node = SKSpriteNode(imageNamed: "vortex")
+        node.name = "vortex\(count)"
+        node.position = position
+        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
+        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
+        node.physicsBody?.isDynamic = false
+        node.physicsBody?.collisionBitMask = 0
+
+        let categoryBitMask = CollisionTypes(rawValue: UInt32(count + 4))?.rawValue ?? CollisionTypes.vortex1.rawValue
+        node.physicsBody?.categoryBitMask = categoryBitMask
+
+        addChild(node)
+    }
+    
     func loadLevel() {
-        guard let levelURL = Bundle.main.url(forResource: "level1", withExtension: "txt") else {
+        guard let levelURL = Bundle.main.url(forResource: "level3", withExtension: "txt") else {
             fatalError("Could not find level1.txt in the app bundle.")
         }
         guard let levelString = try? String(contentsOf: levelURL) else {
@@ -113,7 +129,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         for (row, line) in lines.reversed().enumerated() {
             for (column, letter) in line.enumerated() {
-                let position = CGPoint(x: (64 * column) + 32, y: (64 * row) - 32)
+//                if "level1"
+//                let position = CGPoint(x: (64 * column) + 32, y: (64 * row) - 32)
+//                if "level2"
+//                let position = CGPoint(x: (32 * column) + 32, y: (32 * row) - 32)
+//                if "level3"
+                let position = CGPoint(x: (16 * column) + 32, y: (16 * row) - 32)
                 
                 if letter == "x" {
                     let node = SKSpriteNode(imageNamed: "block")
@@ -126,24 +147,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     let node = SKSpriteNode(imageNamed: "ballGrey")
                     node.position = position
                     node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 2)
-                    node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
+                    //node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
                     node.physicsBody?.categoryBitMask = CollisionTypes.ball1.rawValue
                     node.physicsBody?.isDynamic = true
                     addChild(node)
                 } else if letter == "v"  {
                     count = count + 1
                     if "vortex\(count)" == "vortex1" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex1.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
                     }
+
                     if "vortex\(count)" == "vortex2" {
                         let node = SKSpriteNode(imageNamed: "vortex")
                         node.name = "vortex\(count)"
@@ -242,7 +254,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func createPlayer() {
         player = SKSpriteNode(imageNamed: "ballRed")
-        player.position = CGPoint(x: 396, y: 472)
+        player.position = CGPoint(x: (Int (arc4random_uniform(856) + 50)), y: (Int (arc4random ()) % 472)) //(x: 396, y: 472)
         player.zPosition = 1
         player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width / 2)
         player.physicsBody?.allowsRotation = false
@@ -267,168 +279,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func ball1Collided(with node: SKNode) {
         //New balls fall into vortex and they shou;d bounce off
-        if node.name == "ballRed" {
+        guard let name = node.name, name.starts(with: "vortex"),
+              let index = Int(name.dropFirst("vortex".count)),
+              (1...8).contains(index) else { return }
+
+        let spotTakenFlags = [isSpot1Taken, isSpot2Taken, isSpot3Taken, isSpot4Taken,
+                              isSpot5Taken, isSpot6Taken, isSpot7Taken, isSpot8Taken]
+
+        if !spotTakenFlags[index - 1] {
             player.physicsBody?.isDynamic = false
-            //            isGameOver = true
             score += 1
-        } else if node.name == "vortex8" {
-            count = 8
-            if "vortex\(count)" == "vortex8" {
-                if !isSpot8Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot8Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
+
+            switch index {
+            case 1: isSpot1Taken = true
+            case 2: isSpot2Taken = true
+            case 3: isSpot3Taken = true
+            case 4: isSpot4Taken = true
+            case 5: isSpot5Taken = true
+            case 6: isSpot6Taken = true
+            case 7: isSpot7Taken = true
+            case 8: isSpot8Taken = true
+            default: break
             }
-        } else if node.name == "vortex7" {
-            count = 7
-            if "vortex\(count)" == "vortex7" {
-                if !isSpot7Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot7Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
-            }
-        } else if node.name == "vortex6" {
-            count = 6
-            if "vortex\(count)" == "vortex6" {
-                if !isSpot6Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot6Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
-            }
-        } else if node.name == "vortex5" {
-            count = 5
-            if "vortex\(count)" == "vortex5" {
-                if !isSpot5Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot5Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
-            }
-        } else if node.name == "vortex4" {
-            count = 4
-            if "vortex\(count)" == "vortex4" {
-                if !isSpot4Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot4Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
-            }
-        } else if node.name == "vortex3" {
-            count = 3
-            if "vortex\(count)" == "vortex3" {
-                if !isSpot3Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot3Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
-            }
-        } else if node.name == "vortex2" {
-            count = 2
-            if "vortex\(count)" == "vortex2" {
-                if !isSpot2Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot2Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
-            }
-        } else if node.name == "vortex1" {
-            count = 1
-            if "vortex\(count)" == "vortex1" {
-                if !isSpot1Taken {
-                    player.physicsBody?.isDynamic = false
-                    self.isSpot1Taken = true
-                    score += 1
-                    
-                    let move = SKAction.move(to: node.position, duration: 0.25)
-                    //            let scale = SKAction.scale(to: 0.0001, duration: 0.25)
-                    //            let remove = SKAction.removeFromParent()
-                    let sequence = SKAction.sequence([move]) //, scale, remove])
-                    
-                    player.run(sequence) { [weak self] in
-                        self?.createPlayer()
-                        //                self?.isGameOver = false
-                    }
-                }
+
+            let move = SKAction.move(to: node.position, duration: 0.25)
+            player.run(SKAction.sequence([move])) { [weak self] in
+                self?.createPlayer()
             }
         }
-        
     }
+
     func shake() {
         print("Shake")
-
-        
+        let shake = SKAction.sequence([
+            SKAction.moveBy(x: 10, y: 0, duration: 0.05),
+            SKAction.moveBy(x: -20, y: 0, duration: 0.1),
+            SKAction.moveBy(x: 10, y: 0, duration: 0.05)
+        ])
+        self.run(shake)        
     }
 }

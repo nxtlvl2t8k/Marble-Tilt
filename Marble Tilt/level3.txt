@@ -1,0 +1,48 @@
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                            x
+x   b                                                        x
+x                                v                           x
+x                                                            x
+x                                      v             b       x
+x         v                                        v         x
+x                               v                            x
+x                                    v      b        v       x
+x                       v                  v                 x
+x       b                            b                       x
+x                                                            x
+x                               v                  v         x
+x                                                            x
+x                                                            x
+x                                        v                   x
+x                                                            x
+x                                                            x
+x                                     b            v         x
+x                                    v                       x
+x                                                            x
+x                                                            x
+x               b                                            x
+x                                                            x
+x                                                            x
+x                                                  b         x
+x                                                            x
+x                                                            x
+x                          b                                 x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x               b                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+x                                                            x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
