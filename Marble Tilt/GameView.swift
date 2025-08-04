@@ -7,11 +7,20 @@
 
 
 import SwiftUI
+import SpriteKit
 
-struct GameView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> GameViewController {
-        return GameViewController()
+struct GameView: View {
+    var scene: SKScene {
+        let scene = GameScene(size: CGSize(width: 1024, height: 768))
+        scene.scaleMode = .aspectFill
+        return scene
     }
 
-    func updateUIViewController(_ uiViewController: GameViewController, context: Context) {}
+    var body: some View {
+        SpriteView(scene: scene)
+            .ignoresSafeArea()
+            .onAppear {
+                // Add other startup logic if needed
+            }
+    }
 }
