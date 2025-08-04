@@ -10,7 +10,10 @@ import SwiftUI
 struct MarblesApp: App {
     var body: some Scene {
         WindowGroup {
-            GameView()
+            //GameView()
+            //PatternEditorView()
+            GameView2()
+            
         }
     }
 }

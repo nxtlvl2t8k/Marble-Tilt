@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -33,6 +33,10 @@
 		D5BEEE532AFF1FD200D44ED6 /* level2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = level2.txt; sourceTree = "<group>"; };
 		D5BEEE552AFF235B00D44ED6 /* level3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = level3.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D5A329882E40C2BD00C65E36 /* New Code */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "New Code"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D57C3F56273792DB00FDB95B /* Frameworks */ = {
@@ -64,12 +68,13 @@
 		D57C3F5B273792DB00FDB95B /* Marble Tilt */ = {
 			isa = PBXGroup;
 			children = (
+				D5A3293F2E40B72600C65E36 /* MarblesApp.swift */,
+				D5A3293B2E40B3E000C65E36 /* ContentView.swift */,
+				D5A329392E40B3C100C65E36 /* GameView.swift */,
+				D5A329882E40C2BD00C65E36 /* New Code */,
+				D57C3F64273792DB00FDB95B /* GameViewController.swift */,
 				D57C3F5E273792DB00FDB95B /* GameScene.sks */,
 				D57C3F62273792DB00FDB95B /* GameScene.swift */,
-				D5A3293F2E40B72600C65E36 /* MarblesApp.swift */,
-				D57C3F64273792DB00FDB95B /* GameViewController.swift */,
-				D5A329392E40B3C100C65E36 /* GameView.swift */,
-				D5A3293B2E40B3E000C65E36 /* ContentView.swift */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
 				D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */,
 				D57C3F732737BB9F00FDB95B /* level1.txt */,
@@ -93,6 +98,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D5A329882E40C2BD00C65E36 /* New Code */,
 			);
 			name = "Marble Tilt";
 			productName = "Marble Tilt";
