@@ -15,6 +15,7 @@
 		D5A3293A2E40B3C100C65E36 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A329392E40B3C100C65E36 /* GameView.swift */; };
 		D5A3293C2E40B3E000C65E36 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293B2E40B3E000C65E36 /* ContentView.swift */; };
 		D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293F2E40B72600C65E36 /* MarblesApp.swift */; };
+		D5A329B82E4100D300C65E36 /* handshake.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = D5A329B72E4100D300C65E36 /* handshake.jpeg */; };
 		D5BEEE542AFF1FD200D44ED6 /* level2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D5BEEE532AFF1FD200D44ED6 /* level2.txt */; };
 		D5BEEE562AFF235B00D44ED6 /* level3.txt in Resources */ = {isa = PBXBuildFile; fileRef = D5BEEE552AFF235B00D44ED6 /* level3.txt */; };
 /* End PBXBuildFile section */
@@ -30,6 +31,7 @@
 		D5A329392E40B3C100C65E36 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		D5A3293B2E40B3E000C65E36 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5A3293F2E40B72600C65E36 /* MarblesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblesApp.swift; sourceTree = "<group>"; };
+		D5A329B72E4100D300C65E36 /* handshake.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = handshake.jpeg; sourceTree = "<group>"; };
 		D5BEEE532AFF1FD200D44ED6 /* level2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = level2.txt; sourceTree = "<group>"; };
 		D5BEEE552AFF235B00D44ED6 /* level3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = level3.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -76,6 +78,7 @@
 				D57C3F5E273792DB00FDB95B /* GameScene.sks */,
 				D57C3F62273792DB00FDB95B /* GameScene.swift */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
+				D5A329B72E4100D300C65E36 /* handshake.jpeg */,
 				D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */,
 				D57C3F732737BB9F00FDB95B /* level1.txt */,
 				D5BEEE532AFF1FD200D44ED6 /* level2.txt */,
@@ -148,6 +151,7 @@
 				D5BEEE562AFF235B00D44ED6 /* level3.txt in Resources */,
 				D57C3F742737BB9F00FDB95B /* level1.txt in Resources */,
 				D5BEEE542AFF1FD200D44ED6 /* level2.txt in Resources */,
+				D5A329B82E4100D300C65E36 /* handshake.jpeg in Resources */,
 				D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */,
 				D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */,
 			);

@@ -7,7 +7,7 @@
 
 
 import SwiftUI
-
+//returns a white screen at the moment  Needs work
 struct PatternEditorView: View {
     @State private var tapLocation: CGPoint = .zero
     @State private var marblePositions: [CGPoint] = []

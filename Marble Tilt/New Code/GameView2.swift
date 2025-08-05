@@ -16,12 +16,23 @@ struct GameView2: View {
         scene.scaleMode = .resizeFill
         return scene
     }
-
+    
+    @State private var gameSceneRef: GameScene2?
+    
     var body: some View {
         SpriteView(scene: scene)
             .ignoresSafeArea()
             .onAppear {
-                // Add other startup logic if needed
+                // Save reference to the scene
+                if let skView = UIApplication.shared.windows.first?.rootViewController?.view.subviews.compactMap({ $0 as? SKView }).first,
+                   let currentScene = skView.scene as? GameScene2 {
+                    gameSceneRef = currentScene
+                }
             }
+        
+        Button("🔁 Reset Game") {
+            gameSceneRef?.resetGame()
+        }
+        .padding()
     }
 }
