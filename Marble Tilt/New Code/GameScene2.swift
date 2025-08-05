@@ -58,17 +58,8 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     }
     
     func loadTargetPattern() {
-        for position in targetPositions {
-            let vortex = SKShapeNode(circleOfRadius: 6)
-            vortex.position = position
-            vortex.strokeColor = .clear
-            vortex.fillColor = .orange
-            vortex.alpha = 0.3
-            vortex.zPosition = -0.5
-            addChild(vortex)
-        }
         
-        if let url = Bundle.main.url(forResource: "marble_positions_handshake", withExtension: "json"),
+        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json"),
            let data = try? Data(contentsOf: url),
            let positions = try? JSONDecoder().decode([CGPoint].self, from: data) {
             targetPositions = positions
@@ -144,20 +135,21 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
 //            }
 //        }
 //    }
-    func resetGame() {
-        // Remove all marbles
-        for marble in marbles {
-            marble.removeFromParent()
-        }
-        marbles.removeAll()
-//        lockedMarbles.removeAll()
+    
+//    func resetGame() {
+//        // Remove all marbles
+//        for marble in marbles {
+//            marble.removeFromParent()
+//        }
+//        marbles.removeAll()
+//        //lockedMarbles.removeAll()
 
-        // Optional: remove any sparks or effects
-        for child in children where child.name == "effect" {
-            child.removeFromParent()
-        }
+//        // Optional: remove any sparks or effects
+//        for child in children where child.name == "effect" {
+//            child.removeFromParent()
+//        }
 
         // Spawn fresh marbles
-        spawnMarbles(count: targetPositions.count)
-    }
+//        spawnMarbles(count: targetPositions.count)
+//    }
 }

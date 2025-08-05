@@ -30,9 +30,9 @@ struct GameView2: View {
                 }
             }
         
-        Button("🔁 Reset Game") {
-            gameSceneRef?.resetGame()
-        }
-        .padding()
+//        Button("🔁 Reset Game") {
+//            gameSceneRef?.resetGame()
+//        }
+//        .padding()
     }
 }

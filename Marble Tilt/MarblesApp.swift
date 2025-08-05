@@ -11,8 +11,8 @@ struct MarblesApp: App {
     var body: some Scene {
         WindowGroup {
             //GameView()
-            //PatternEditorView()
-            GameView2()
+            PatternEditorView()
+            //GameView2()
             
         }
     }
