@@ -11,7 +11,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var marbles: [SKShapeNode] = []
     var targetPositions: [CGPoint] = []
-    var lockedMarbles: Set<Int> = []
+//    var lockedMarbles: Set<Int> = []
 
     
     override func didMove(to view: SKView) {
@@ -37,13 +37,13 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.restitution = 0.6
             addChild(marble)
         }
-//        // 🟠 Load target vortex positions from JSON
-//        loadTargetPattern()
-        
-        // 🌀 Add all vortex spots now that we have positions
-        for pos in targetPositions {
-            addVortex(at: pos)
-        }
+////        // 🟠 Load target vortex positions from JSON
+////        loadTargetPattern()
+//        
+//        // 🌀 Add all vortex spots now that we have positions
+//        for pos in targetPositions {
+//            addVortex(at: pos)
+//        }
         
         // 🌌 Add background image
         let background = SKSpriteNode(imageNamed: "handshake.jpeg") // use your image name
@@ -110,47 +110,47 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-//    override func update(_ currentTime: TimeInterval) {
-//        if let data = motionManager.accelerometerData {
-//            let tiltX = data.acceleration.y
-//            let tiltY = data.acceleration.x
-//            physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
-//        }
-//    }
     override func update(_ currentTime: TimeInterval) {
-        for (i, marble) in marbles.enumerated() where i < targetPositions.count {
-            guard i < targetPositions.count else { continue }
-            guard !lockedMarbles.contains(i) else { continue }
-            
-            let target = targetPositions[i]
-            let dx = target.x - marble.position.x
-            let dy = target.y - marble.position.y
-            let distance = sqrt(dx*dx + dy*dy)
-
-            // ✅ If close to the target position, lock it in place
-            if distance < 5 {
-                marble.position = target
-                marble.physicsBody = SKPhysicsBody(circleOfRadius: 4)
-                marble.physicsBody?.isDynamic = false // ✅ Locks it in place
-                marble.physicsBody?.categoryBitMask = 1 << 2
-                marble.physicsBody?.collisionBitMask = 0xFFFFFFFF // collide with everything
-                marble.physicsBody?.restitution = 0.6
-                marble.fillColor = .green
-                lockedMarbles.insert(i)
-            } else {
-                // ✅ Apply small steering force toward target
-                let vector = CGVector(dx: dx * 0.01, dy: dy * 0.01)
-                marble.physicsBody?.applyForce(vector)
-            }
+        if let data = motionManager.accelerometerData {
+            let tiltX = data.acceleration.y
+            let tiltY = data.acceleration.x
+            physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
         }
     }
+//    override func update(_ currentTime: TimeInterval) {
+//        for (i, marble) in marbles.enumerated() where i < targetPositions.count {
+//            guard i < targetPositions.count else { continue }
+//            guard !lockedMarbles.contains(i) else { continue }
+//            
+//            let target = targetPositions[i]
+//            let dx = target.x - marble.position.x
+//            let dy = target.y - marble.position.y
+//            let distance = sqrt(dx*dx + dy*dy)
+//
+//            // ✅ If close to the target position, lock it in place
+//            if distance < 5 {
+//                marble.position = target
+//                marble.physicsBody = SKPhysicsBody(circleOfRadius: 4)
+//                marble.physicsBody?.isDynamic = false // ✅ Locks it in place
+//                marble.physicsBody?.categoryBitMask = 1 << 2
+//                marble.physicsBody?.collisionBitMask = 0xFFFFFFFF // collide with everything
+//                marble.physicsBody?.restitution = 0.6
+//                marble.fillColor = .green
+//                lockedMarbles.insert(i)
+//            } else {
+//                // ✅ Apply small steering force toward target
+//                let vector = CGVector(dx: dx * 0.01, dy: dy * 0.01)
+//                marble.physicsBody?.applyForce(vector)
+//            }
+//        }
+//    }
     func resetGame() {
         // Remove all marbles
         for marble in marbles {
             marble.removeFromParent()
         }
         marbles.removeAll()
-        lockedMarbles.removeAll()
+//        lockedMarbles.removeAll()
 
         // Optional: remove any sparks or effects
         for child in children where child.name == "effect" {

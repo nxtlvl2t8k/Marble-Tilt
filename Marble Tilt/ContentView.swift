@@ -11,7 +11,7 @@ struct ContentView: View {
 //        GameView()
 //            .edgesIgnoringSafeArea(.all)
 //        PatternEditorView()
-            GameView2()
-                .edgesIgnoringSafeArea(.all)
+        GameView2()
+            .edgesIgnoringSafeArea(.all)
     }
 }
