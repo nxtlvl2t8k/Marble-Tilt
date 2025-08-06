@@ -75,6 +75,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         vortex.position = position
         vortex.zPosition = 1
         vortex.setScale(0.5)
+        vortex.name = "vortex"
         
         vortex.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
         
@@ -82,27 +83,27 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         vortex.physicsBody?.isDynamic = false
         vortex.physicsBody?.categoryBitMask = 1 << 1
         vortex.physicsBody?.contactTestBitMask = 1 << 0 // assuming marbles are 1 << 0
-        vortex.physicsBody?.collisionBitMask = 0
+        vortex.physicsBody?.collisionBitMask = 1 << 0 // ← allow collision with marbles!
+
         
         addChild(vortex)
     }
 
     func spawnMarbles(count: Int) {
         for _ in 0..<count {
-//            let marble = SKShapeNode(circleOfRadius: 8) //4)
             let marble = SKSpriteNode(imageNamed: "ballGrey")
             marble.name = "ballGrey"
             marble.size = CGSize(width: 24, height: 24)
             marble.position = CGPoint(x: CGFloat.random(in: 0...size.width),
                                       y: CGFloat.random(in: 0...size.height))
-            marble.physicsBody = SKPhysicsBody(circleOfRadius: 6) //4
+            marble.physicsBody = SKPhysicsBody(circleOfRadius: 12) //4
             marble.physicsBody?.restitution = 0.6
             marble.physicsBody?.friction = 0.1
             marble.physicsBody?.linearDamping = 0.4
             marble.physicsBody?.allowsRotation = true
             marble.physicsBody?.categoryBitMask = 1 << 0
             marble.physicsBody?.contactTestBitMask = 1 << 1
-            marble.physicsBody?.collisionBitMask = 0xFFFFFFFF
+            marble.physicsBody?.collisionBitMask = 1 << 1 //0xFFFFFFFF
             marbles.append(marble)
             addChild(marble)
         }
@@ -117,20 +118,45 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        guard let marble = (contact.bodyA.node as? SKSpriteNode ?? contact.bodyB.node as? SKSpriteNode),
-              marble.name == "marble" else { return }
-/// this makes ballGrey lockMarkle and turns green against the wall
-        //        marble.name == "ballGrey" else { return }
+        let nodeA = contact.bodyA.node
+        let nodeB = contact.bodyB.node
 
-        let vortex = (contact.bodyA.node?.name == "vortex") ? contact.bodyA.node : contact.bodyB.node
-        guard let vortexNode = vortex as? SKSpriteNode else { return }
+        var marble: SKNode?
+        var vortex: SKNode?
 
-        let vortexPos = vortexNode.position
-        if !lockedVortexes.contains(vortexPos) {
-            lockMarble(marble, at: vortexPos)
-            lockedVortexes.insert(vortexPos)
+        // Identify which is which
+        if nodeA?.name == "ballGrey" && nodeB?.name == "vortex" {
+            marble = nodeA
+            vortex = nodeB
+        } else if nodeB?.name == "ballGrey" && nodeA?.name == "vortex" {
+            marble = nodeB
+            vortex = nodeA
+        }
+
+        // Lock the marble to the vortex
+        if let marble = marble, let vortex = vortex {
+            marble.physicsBody?.velocity = .zero
+            marble.physicsBody?.angularVelocity = 0
+            marble.physicsBody?.isDynamic = false
+            marble.position = vortex.position
+            print("🔒 Marble locked to vortex")
         }
     }
+    
+//        guard let marble = (contact.bodyA.node as? SKSpriteNode ?? contact.bodyB.node as? SKSpriteNode),
+//              marble.name == "marble" else { return }
+///// this makes ballGrey lockMarkle and turns green against the wall
+//        //        marble.name == "ballGrey" else { return }
+//
+//        let vortex = (contact.bodyA.node?.name == "vortex") ? contact.bodyA.node : contact.bodyB.node
+//        guard let vortexNode = vortex as? SKSpriteNode else { return }
+//
+//        let vortexPos = vortexNode.position
+//        if !lockedVortexes.contains(vortexPos) {
+//            lockMarble(marble, at: vortexPos)
+//            lockedVortexes.insert(vortexPos)
+//        }
+//    }
     
     override func update(_ currentTime: TimeInterval) {
         if let data = motionManager.accelerometerData {
