@@ -21,3 +21,4 @@ class GameViewController2: UIViewController {
         self.view = SKView()
     }
 }
+

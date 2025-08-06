@@ -11,8 +11,8 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var marbles: [SKShapeNode] = []
     var targetPositions: [CGPoint] = []
-//    var lockedMarbles: Set<Int> = []
-
+    //    var lockedMarbles: Set<Int> = []
+    
     
     override func didMove(to view: SKView) {
         print("✅ GameScene2 loaded")
@@ -22,49 +22,70 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         physicsWorld.contactDelegate = self
         motionManager.startAccelerometerUpdates()
-        //adds 1 vortex in the middle
-        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
         
         let positions = MarbleLoader.loadPositions()
         print("🔵 Loaded \(positions.count) marbles")
         
-        for position in positions {
-            let marble = SKShapeNode(circleOfRadius: 10)
-            marble.fillColor = .blue
-            marble.position = position
-            marble.physicsBody = SKPhysicsBody(circleOfRadius: 10)
-            marble.physicsBody?.affectedByGravity = true
-            marble.physicsBody?.restitution = 0.6
-            addChild(marble)
+        // 🟠 Load target vortex positions from JSON
+        loadTargetPattern()
+        
+        
+        // 🌀 Add all vortex spots now that we have positions
+        for pos in targetPositions {
+            addVortex(at: pos)
         }
-////        // 🟠 Load target vortex positions from JSON
-////        loadTargetPattern()
-//        
-//        // 🌀 Add all vortex spots now that we have positions
-//        for pos in targetPositions {
-//            addVortex(at: pos)
-//        }
-        
-        // 🌌 Add background image
-        let background = SKSpriteNode(imageNamed: "handshake.jpeg") // use your image name
-        background.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        background.zPosition = -1
-        background.size = size
-        addChild(background)
-        
+                
+        //adds 1 vortex in the middle
+        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
+
+        //        for position in positions {
+        //            let marble = SKShapeNode(circleOfRadius: 10)
+        //            marble.fillColor = .blue
+        //            marble.position = position
+        //            marble.physicsBody = SKPhysicsBody(circleOfRadius: 10)
+        //            marble.physicsBody?.affectedByGravity = true
+        //            marble.physicsBody?.restitution = 0.6
+        //            addChild(marble)
+        //        }
+                
+        //        // 🌌 Add background image
+        //        let background = SKSpriteNode(imageNamed: "handshake.jpeg") // use your image name
+        //        background.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        //        background.zPosition = -1
+        //        background.size = size
+        //        addChild(background)
+
         // ⚪ Spawn marbles to match target pattern
         spawnMarbles(count: targetPositions.count)
         
     }
-    
+
     func loadTargetPattern() {
         
-        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json"),
-           let data = try? Data(contentsOf: url),
-           let positions = try? JSONDecoder().decode([CGPoint].self, from: data) {
-            targetPositions = positions
+        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") {
+            print("📄 Found file at: \(url)")
+            do {
+                let data = try Data(contentsOf: url)
+                let decoded = try JSONDecoder().decode([MarblePosition].self, from: data)
+                targetPositions = decoded.map { $0.cgPoint }
+                print("🌀 Loaded \(targetPositions.count) vortex positions")
+            } catch {
+                print("❌ JSON decode failed: \(error)")
+            }
+        } else {
+            print("❌ Could not find JSON file in bundle")
         }
     }
+//        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad-2", withExtension: "json") {
+//            print("📄 Found file at: \(url)")
+//            do {
+//                let text = try String(contentsOf: url)
+//                print("📜 File contents:\n\(text)")
+//            } catch {
+//                print("❌ Failed to read JSON text: \(error)")
+//            }
+//        }
+//}
         
     func addVortex(at position: CGPoint) {
         let vortex = SKSpriteNode(imageNamed: "vortex") // your vortex image
@@ -108,6 +129,21 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
         }
     }
+}
+//    func didBegin(_ contact: SKPhysicsContact) {
+//        guard let nodeA = contact.bodyA.node,
+//              let nodeB = contact.bodyB.node else { return }
+//
+//        let names = [nodeA.name, nodeB.name]
+//
+//        if names.contains("marble") && names.contains("vortex") {
+//            if let marble = [nodeA, nodeB].first(where: { $0.name == "marble" }) {
+//                marble.removeFromParent()
+//                print("💥 Marble removed!")
+//            }
+//        }
+//    }
+//}
 //    override func update(_ currentTime: TimeInterval) {
 //        for (i, marble) in marbles.enumerated() where i < targetPositions.count {
 //            guard i < targetPositions.count else { continue }
@@ -152,4 +188,4 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         // Spawn fresh marbles
 //        spawnMarbles(count: targetPositions.count)
 //    }
-}
+//}
