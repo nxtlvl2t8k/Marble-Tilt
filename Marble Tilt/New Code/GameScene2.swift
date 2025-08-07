@@ -13,8 +13,9 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     var targetPositions: [CGPoint] = []
     var lockMarble: Set<CGPoint> = []
     var lockedMarbles: Set<CGPoint> = []
-    var lockedVortexes: Set<CGPoint> = []
-
+    var lockedVortexes: Set<SKNode> = []
+    var vortexNodes: [SKSpriteNode] = []
+    private var selectedVortex: SKSpriteNode?
     
     override func didMove(to view: SKView) {
         print("✅ GameScene2 loaded")
@@ -37,9 +38,9 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             addVortex(at: pos)
         }
         
-        //adds 1 vortex in the middle
-        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
-                
+//        //adds 1 vortex in the middle
+//        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
+        
         // 🌌 Add background image
         let background = SKSpriteNode(imageNamed: "handshake.jpeg") // use your image name
         background.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -47,8 +48,8 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         background.size = size
         addChild(background)
         
-                // ⚪ Spawn marbles to match target pattern
-                spawnMarbles(count: targetPositions.count)
+        // ⚪ Spawn marbles to match target pattern
+        spawnMarbles(count: targetPositions.count)
         
     }
     
@@ -75,7 +76,6 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         vortex.position = position
         vortex.zPosition = 1
         vortex.setScale(0.5)
-        vortex.name = "vortex"
         
         vortex.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
         
@@ -83,12 +83,41 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         vortex.physicsBody?.isDynamic = false
         vortex.physicsBody?.categoryBitMask = 1 << 1
         vortex.physicsBody?.contactTestBitMask = 1 << 0 // assuming marbles are 1 << 0
-        vortex.physicsBody?.collisionBitMask = 1 << 0 // ← allow collision with marbles!
-
+        vortex.physicsBody?.collisionBitMask = 0
         
+        vortexNodes.append(vortex)
         addChild(vortex)
     }
-
+///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        guard let touch = touches.first else { return }
+//        let location = touch.location(in: self)
+//        
+//        for vortex in vortexNodes {
+//            if vortex.contains(location) {
+//                selectedVortex = vortex
+//                break
+//            }
+//        }
+//    }
+//
+//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        guard let touch = touches.first, let vortex = selectedVortex else { return }
+//        let location = touch.location(in: self)
+//        vortex.position = location
+//    }
+//
+//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        if let vortex = selectedVortex {
+//            print("📍 Dropped vortex at: \(vortex.position)")
+//        }
+//        selectedVortex = nil
+//    }
+//
+//    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        selectedVortex = nil
+//    }
+    
     func spawnMarbles(count: Int) {
         for _ in 0..<count {
             let marble = SKSpriteNode(imageNamed: "ballGrey")
@@ -103,27 +132,27 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.allowsRotation = true
             marble.physicsBody?.categoryBitMask = 1 << 0
             marble.physicsBody?.contactTestBitMask = 1 << 1
-            marble.physicsBody?.collisionBitMask = 1 << 1 //0xFFFFFFFF
+            marble.physicsBody?.collisionBitMask = 0xFFFFFFFF //1 << 1 //0xFFFFFFFF
             marbles.append(marble)
             addChild(marble)
         }
     }
     
-    func lockMarble(_ marble: SKSpriteNode, at position: CGPoint) {
-        marble.position = position
-        marble.physicsBody = nil // disable physics
-        marble.zPosition = 2
-        marble.color = .green
-        marble.colorBlendFactor = 0.6
-    }
+//    func lockMarble(_ marble: SKSpriteNode, at position: CGPoint) {
+//        marble.position = position
+//        marble.physicsBody = nil // disable physics
+//        marble.zPosition = 2
+//        marble.color = .green
+//        marble.colorBlendFactor = 0.6
+//    }
     
     func didBegin(_ contact: SKPhysicsContact) {
         let nodeA = contact.bodyA.node
         let nodeB = contact.bodyB.node
-
+        
         var marble: SKNode?
         var vortex: SKNode?
-
+        
         // Identify which is which
         if nodeA?.name == "ballGrey" && nodeB?.name == "vortex" {
             marble = nodeA
@@ -132,41 +161,48 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             marble = nodeB
             vortex = nodeA
         }
-
-        // Lock the marble to the vortex
-        if let marble = marble, let vortex = vortex {
-            marble.physicsBody?.velocity = .zero
-            marble.physicsBody?.angularVelocity = 0
-            marble.physicsBody?.isDynamic = false
-            marble.position = vortex.position
-            print("🔒 Marble locked to vortex")
-        }
-    }
-    
-//        guard let marble = (contact.bodyA.node as? SKSpriteNode ?? contact.bodyB.node as? SKSpriteNode),
-//              marble.name == "marble" else { return }
-///// this makes ballGrey lockMarkle and turns green against the wall
-//        //        marble.name == "ballGrey" else { return }
-//
-//        let vortex = (contact.bodyA.node?.name == "vortex") ? contact.bodyA.node : contact.bodyB.node
-//        guard let vortexNode = vortex as? SKSpriteNode else { return }
-//
-//        let vortexPos = vortexNode.position
-//        if !lockedVortexes.contains(vortexPos) {
-//            lockMarble(marble, at: vortexPos)
-//            lockedVortexes.insert(vortexPos)
+        
+//        // Lock the marble to the vortex
+//        if let marble = marble, let vortex = vortex {
+//            marble.physicsBody?.velocity = .zero
+//            marble.physicsBody?.angularVelocity = 0
+//            marble.physicsBody?.isDynamic = false
+//            marble.position = vortex.position
+//            print("🔒 Marble locked to vortex")
 //        }
-//    }
-    
+    }
+        
     override func update(_ currentTime: TimeInterval) {
         if let data = motionManager.accelerometerData {
             let tiltX = data.acceleration.y
             let tiltY = data.acceleration.x
             physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
         }
+        // Golf-hole style sink logic
+        for marble in marbles {
+            guard marble.physicsBody?.isDynamic == true else { continue }
+            
+            for vortex in vortexNodes {
+                let dx = vortex.position.x - marble.position.x
+                let dy = vortex.position.y - marble.position.y
+                let distance = sqrt(dx*dx + dy*dy)
+                
+                if distance < 8 { // smaller radius means tighter "hole"
+                    // Sink marble into vortex
+                    marble.position = vortex.position
+                    marble.physicsBody?.velocity = .zero
+                    marble.physicsBody?.angularVelocity = 0
+                    marble.physicsBody?.isDynamic = false
+                    marble.zPosition = vortex.zPosition + 1
+                    marble.setScale(0.8) // Optional visual scale down
+                    marble.run(SKAction.fadeAlpha(to: 1.0, duration: 0.2))
+                    print("⛳️ Marble sunk into vortex at \(vortex.position)")
+                    break
+                }
+            }
+        }
     }
 }
-    
     
 //    func resetGame() {
 //        // Remove all marbles
@@ -175,13 +211,13 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
 //        }
 //        marbles.removeAll()
 //        //lockedMarbles.removeAll()
-
+//
 //        // Optional: remove any sparks or effects
 //        for child in children where child.name == "effect" {
 //            child.removeFromParent()
 //        }
-
-        // Spawn fresh marbles
+//
+//         //Spawn fresh marbles
 //        spawnMarbles(count: targetPositions.count)
 //    }
 //}
