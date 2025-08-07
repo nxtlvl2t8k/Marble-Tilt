@@ -17,6 +17,8 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     var vortexNodes: [SKSpriteNode] = []
     var sunkMarbles: [SKNode] = []
     private var selectedVortex: SKSpriteNode?
+    private var lastAcceleration: CMAcceleration?
+    private var shakeThreshold: Double = 0.7 // Adjust to taste
     
     override func didMove(to view: SKView) {
         print("✅ GameScene2 loaded")
@@ -147,6 +149,26 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         if let data = motionManager.accelerometerData {
+            let acc = data.acceleration
+            
+            // Shake intensity logic
+            if let last = lastAcceleration {
+                let deltaX = acc.x - last.x
+                let deltaY = acc.y - last.y
+                let deltaZ = acc.z - last.z
+                
+                let shakeMagnitude = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+                
+                if shakeMagnitude > shakeThreshold {
+                    print("🤳 Shake detected! Magnitude: \(shakeMagnitude)")
+                    resetAfterShake()
+                }
+                
+            }
+            
+            lastAcceleration = acc
+            
+            // Gravity tilt (keep your existing code)
             let tiltX = data.acceleration.y
             let tiltY = data.acceleration.x
             physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
@@ -163,7 +185,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
                 let velocity = marble.physicsBody?.velocity ?? .zero
                   let speed = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
 
-                  if distance < 6 && speed < 30 { // ⛳️ Only sink if slow and centered
+                  if distance < 6 && speed < 60 { // ⛳️ Only sink if slow and centered
 //                if distance < 6 { // smaller radius means tighter "hole"
                     // Sink marble into vortex
                     marble.position = vortex.position
@@ -173,12 +195,57 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
                     marble.zPosition = vortex.zPosition + 1
                     marble.setScale(0.8) // Optional visual scale down
                     marble.run(SKAction.fadeAlpha(to: 1.0, duration: 0.2))
+                    if let sprite = marble as? SKSpriteNode {
+                        if !sunkMarbles.contains(sprite) {
+                            sunkMarbles.append(sprite)
+                        }
+                    }
                     sunkMarbles.append(marble)
                     print("⛳️ Marble sunk into vortex at \(vortex.position)")
                     break
                 }
             }
         }
+    }
+    
+    func resetAfterShake() {
+        // Reuse marbles
+        for marble in sunkMarbles {
+            // Re-enable physics
+            marble.physicsBody = SKPhysicsBody(circleOfRadius: 12)
+            marble.physicsBody?.restitution = 0.6
+            marble.physicsBody?.friction = 0.1
+            marble.physicsBody?.linearDamping = 0.4
+            marble.physicsBody?.allowsRotation = true
+            marble.physicsBody?.categoryBitMask = 1 << 0
+            marble.physicsBody?.collisionBitMask = 1 << 0
+
+            // Reset scale and position to bounce away
+            marble.setScale(1.0)
+            marble.alpha = 1.0
+
+            // Launch upward a bit
+            marble.position.y += 20
+            marble.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 50))
+        }
+
+        print("🔄 Reused \(sunkMarbles.count) marbles from vortex")
+        sunkMarbles.removeAll()
+        
+        // Refresh vortex animations (optional)
+        for vortex in vortexNodes {
+            vortex.removeAllActions()
+            vortex.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
+
+            // Optional: flash or wobble on reset
+            let flash = SKAction.sequence([
+                SKAction.fadeAlpha(to: 0.5, duration: 0.1),
+                SKAction.fadeAlpha(to: 1.0, duration: 0.1)
+            ])
+            vortex.run(SKAction.repeat(flash, count: 2))
+        }
+
+        print("🔄 Reset vortex and marble states after shake")
     }
     
     ///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
