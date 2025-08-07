@@ -15,6 +15,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     var lockedMarbles: Set<CGPoint> = []
     var lockedVortexes: Set<SKNode> = []
     var vortexNodes: [SKSpriteNode] = []
+    var sunkMarbles: [SKNode] = []
     private var selectedVortex: SKSpriteNode?
     
     override func didMove(to view: SKView) {
@@ -104,7 +105,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.allowsRotation = true
             marble.physicsBody?.categoryBitMask = 1 << 0
             marble.physicsBody?.contactTestBitMask = 1 << 1 // to detect vortex
-            marble.physicsBody?.collisionBitMask = 1 << 2 //0xFFFFFFFF // collide only with other things (like frame)
+            marble.physicsBody?.collisionBitMask = 1 << 0 //0xFFFFFFFF // collide only with other things (like frame)
             marbles.append(marble)
             addChild(marble)
         }
@@ -172,6 +173,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
                     marble.zPosition = vortex.zPosition + 1
                     marble.setScale(0.8) // Optional visual scale down
                     marble.run(SKAction.fadeAlpha(to: 1.0, duration: 0.2))
+                    sunkMarbles.append(marble)
                     print("⛳️ Marble sunk into vortex at \(vortex.position)")
                     break
                 }
@@ -208,6 +210,25 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
     //    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     //        selectedVortex = nil
     //    }
+    
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        guard motion == .motionShake else { return }
+
+        print("🤳 Device shaken. Checking to remove sunk marbles...")
+
+        // Optional: Require minimum number of marbles to trigger
+        if sunkMarbles.isEmpty {
+            print("ℹ️ No sunk marbles to remove.")
+            return
+        }
+
+        for marble in sunkMarbles {
+            marble.removeFromParent()
+        }
+
+        print("🗑 Removed \(sunkMarbles.count) sunk marbles.")
+        sunkMarbles.removeAll()
+    }
     
     //    func resetGame() {
     //        // Remove all marbles
