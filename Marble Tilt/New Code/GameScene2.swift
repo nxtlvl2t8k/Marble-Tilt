@@ -38,8 +38,8 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             addVortex(at: pos)
         }
         
-//        //adds 1 vortex in the middle
-//        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
+        //        //adds 1 vortex in the middle
+        //        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
         
         // 🌌 Add background image
         let background = SKSpriteNode(imageNamed: "handshake.jpeg") // use your image name
@@ -50,7 +50,6 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         
         // ⚪ Spawn marbles to match target pattern
         spawnMarbles(count: targetPositions.count)
-        
     }
     
     func loadTargetPattern() {
@@ -79,44 +78,17 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         
         vortex.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
         
-        vortex.physicsBody = SKPhysicsBody(circleOfRadius: vortex.size.width / 2)
+        // 🔧 Use slightly smaller collision radius than image
+        let bodyRadius = (vortex.size.width * 0.5) * 0.4
+        vortex.physicsBody = SKPhysicsBody(circleOfRadius: bodyRadius)
         vortex.physicsBody?.isDynamic = false
         vortex.physicsBody?.categoryBitMask = 1 << 1
-        vortex.physicsBody?.contactTestBitMask = 1 << 0 // assuming marbles are 1 << 0
-        vortex.physicsBody?.collisionBitMask = 0
+        vortex.physicsBody?.contactTestBitMask = 1 << 0 // detect marble
+        vortex.physicsBody?.collisionBitMask = 1 << 0 // collide with marble
         
         vortexNodes.append(vortex)
         addChild(vortex)
     }
-///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        guard let touch = touches.first else { return }
-//        let location = touch.location(in: self)
-//        
-//        for vortex in vortexNodes {
-//            if vortex.contains(location) {
-//                selectedVortex = vortex
-//                break
-//            }
-//        }
-//    }
-//
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        guard let touch = touches.first, let vortex = selectedVortex else { return }
-//        let location = touch.location(in: self)
-//        vortex.position = location
-//    }
-//
-//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if let vortex = selectedVortex {
-//            print("📍 Dropped vortex at: \(vortex.position)")
-//        }
-//        selectedVortex = nil
-//    }
-//
-//    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        selectedVortex = nil
-//    }
     
     func spawnMarbles(count: Int) {
         for _ in 0..<count {
@@ -131,20 +103,20 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.linearDamping = 0.4
             marble.physicsBody?.allowsRotation = true
             marble.physicsBody?.categoryBitMask = 1 << 0
-            marble.physicsBody?.contactTestBitMask = 1 << 1
-            marble.physicsBody?.collisionBitMask = 0xFFFFFFFF //1 << 1 //0xFFFFFFFF
+            marble.physicsBody?.contactTestBitMask = 1 << 1 // to detect vortex
+            marble.physicsBody?.collisionBitMask = 0xFFFFFFFF //1 << 1 //0xFFFFFFFF // collide with vortex
             marbles.append(marble)
             addChild(marble)
         }
     }
     
-//    func lockMarble(_ marble: SKSpriteNode, at position: CGPoint) {
-//        marble.position = position
-//        marble.physicsBody = nil // disable physics
-//        marble.zPosition = 2
-//        marble.color = .green
-//        marble.colorBlendFactor = 0.6
-//    }
+    //    func lockMarble(_ marble: SKSpriteNode, at position: CGPoint) {
+    //        marble.position = position
+    //        marble.physicsBody = nil // disable physics
+    //        marble.zPosition = 2
+    //        marble.color = .green
+    //        marble.colorBlendFactor = 0.6
+    //    }
     
     func didBegin(_ contact: SKPhysicsContact) {
         let nodeA = contact.bodyA.node
@@ -162,16 +134,16 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             vortex = nodeA
         }
         
-//        // Lock the marble to the vortex
-//        if let marble = marble, let vortex = vortex {
-//            marble.physicsBody?.velocity = .zero
-//            marble.physicsBody?.angularVelocity = 0
-//            marble.physicsBody?.isDynamic = false
-//            marble.position = vortex.position
-//            print("🔒 Marble locked to vortex")
-//        }
+        //        // Lock the marble to the vortex
+        //        if let marble = marble, let vortex = vortex {
+        //            marble.physicsBody?.velocity = .zero
+        //            marble.physicsBody?.angularVelocity = 0
+        //            marble.physicsBody?.isDynamic = false
+        //            marble.position = vortex.position
+        //            print("🔒 Marble locked to vortex")
+        //        }
     }
-        
+    
     override func update(_ currentTime: TimeInterval) {
         if let data = motionManager.accelerometerData {
             let tiltX = data.acceleration.y
@@ -187,7 +159,11 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
                 let dy = vortex.position.y - marble.position.y
                 let distance = sqrt(dx*dx + dy*dy)
                 
-                if distance < 8 { // smaller radius means tighter "hole"
+                let velocity = marble.physicsBody?.velocity ?? .zero
+                  let speed = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
+
+                  if distance < 6 && speed < 30 { // ⛳️ Only sink if slow and centered
+//                if distance < 6 { // smaller radius means tighter "hole"
                     // Sink marble into vortex
                     marble.position = vortex.position
                     marble.physicsBody?.velocity = .zero
@@ -202,22 +178,52 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
-}
     
-//    func resetGame() {
-//        // Remove all marbles
-//        for marble in marbles {
-//            marble.removeFromParent()
-//        }
-//        marbles.removeAll()
-//        //lockedMarbles.removeAll()
-//
-//        // Optional: remove any sparks or effects
-//        for child in children where child.name == "effect" {
-//            child.removeFromParent()
-//        }
-//
-//         //Spawn fresh marbles
-//        spawnMarbles(count: targetPositions.count)
-//    }
-//}
+    ///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
+    //    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        guard let touch = touches.first else { return }
+    //        let location = touch.location(in: self)
+    //
+    //        for vortex in vortexNodes {
+    //            if vortex.contains(location) {
+    //                selectedVortex = vortex
+    //                break
+    //            }
+    //        }
+    //    }
+    //
+    //    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        guard let touch = touches.first, let vortex = selectedVortex else { return }
+    //        let location = touch.location(in: self)
+    //        vortex.position = location
+    //    }
+    //
+    //    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        if let vortex = selectedVortex {
+    //            print("📍 Dropped vortex at: \(vortex.position)")
+    //        }
+    //        selectedVortex = nil
+    //    }
+    //
+    //    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        selectedVortex = nil
+    //    }
+    
+    //    func resetGame() {
+    //        // Remove all marbles
+    //        for marble in marbles {
+    //            marble.removeFromParent()
+    //        }
+    //        marbles.removeAll()
+    //        //lockedMarbles.removeAll()
+    //
+    //        // Optional: remove any sparks or effects
+    //        for child in children where child.name == "effect" {
+    //            child.removeFromParent()
+    //        }
+    //
+    //         //Spawn fresh marbles
+    //        spawnMarbles(count: targetPositions.count)
+    //    }
+    
+}
