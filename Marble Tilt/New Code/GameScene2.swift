@@ -83,8 +83,8 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
         vortex.physicsBody = SKPhysicsBody(circleOfRadius: bodyRadius)
         vortex.physicsBody?.isDynamic = false
         vortex.physicsBody?.categoryBitMask = 1 << 1
-        vortex.physicsBody?.contactTestBitMask = 1 << 0 // detect marble
-        vortex.physicsBody?.collisionBitMask = 1 << 0 // collide with marble
+        vortex.physicsBody?.contactTestBitMask = 1 << 0 // detect marble proximity
+        vortex.physicsBody?.collisionBitMask = 0 // ❌ NO collision — marble will pass through
         
         vortexNodes.append(vortex)
         addChild(vortex)
@@ -104,7 +104,7 @@ class GameScene2: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.allowsRotation = true
             marble.physicsBody?.categoryBitMask = 1 << 0
             marble.physicsBody?.contactTestBitMask = 1 << 1 // to detect vortex
-            marble.physicsBody?.collisionBitMask = 0xFFFFFFFF //1 << 1 //0xFFFFFFFF // collide with vortex
+            marble.physicsBody?.collisionBitMask = 1 << 2 //0xFFFFFFFF // collide only with other things (like frame)
             marbles.append(marble)
             addChild(marble)
         }
