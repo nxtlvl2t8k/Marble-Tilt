@@ -8,10 +8,8 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-//        GameView()
-//            .edgesIgnoringSafeArea(.all)
 //        PatternEditorView()
-        GameView2()
+        GameView()
             .edgesIgnoringSafeArea(.all)
     }
 }

@@ -1,321 +1,317 @@
 //
-//  GameScene.swift
+//  GameScene2.swift
 //  Marble Tilt
 //
-//  Created by Scott Mayhew on 2021-11-06.
+//  Created by Scott Mayhew on 2025-08-04.
 //
-
-import CoreMotion
 import SpriteKit
-
-enum CollisionTypes: UInt32 {
-    case player = 1
-    case wall = 2
-    case ball1 = 3
-    case ball2 = 4
-    case vortex1 = 5
-    case vortex2 = 6
-    case vortex3 = 7
-    case vortex4 = 8
-    case vortex5 = 9
-    case vortex6 = 10
-    case vortex7 = 11
-    case vortex8 = 12
-    case finish = 64
-}
+import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-
-    var count: Int = 0
-    var motionManager: CMMotionManager!
-    var player: SKSpriteNode!
-//    var ball1: SKSpriteNode!
-    var lastTouchPosition: CGPoint?
-    var isGameOver = false
-    var isSpot1Taken = false
-    var isSpot2Taken = false
-    var isSpot3Taken = false
-    var isSpot4Taken = false
-    var isSpot5Taken = false
-    var isSpot6Taken = false
-    var isSpot7Taken = false
-    var isSpot8Taken = false
-    var scoreLabel: SKLabelNode!
-
-    var score = 0 {
-        didSet {
-            scoreLabel.text = "Score: \(score)"
-        }
-    }
+    let motionManager = CMMotionManager()
+    var marbles: [SKSpriteNode] = []
+    var targetPositions: [CGPoint] = []
+    var lockMarble: Set<CGPoint> = []
+    var lockedMarbles: Set<CGPoint> = []
+    var lockedVortexes: Set<SKNode> = []
+    var vortexNodes: [SKSpriteNode] = []
+    var sunkMarbles: [SKNode] = []
+    private var selectedVortex: SKSpriteNode?
+    private var lastAcceleration: CMAcceleration?
+    private var shakeThreshold: Double = 0.7 // Adjust to taste
     
     override func didMove(to view: SKView) {
-        let background = SKSpriteNode(imageNamed: "background.jpg")
-        background.position = CGPoint(x: 512, y: 384)
-        background.blendMode = .replace
-        background.zPosition = -1
-        addChild(background)
-
-        scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
-        scoreLabel.text = "Score: 0"
-        scoreLabel.horizontalAlignmentMode = .left
-        scoreLabel.position = CGPoint(x: 16, y: 16)
-        scoreLabel.zPosition = 2
-        addChild(scoreLabel)
+        print("✅ GameScene2 loaded")
         
-        loadLevel()
-        
-        physicsWorld.gravity = .zero
+        backgroundColor = .black
+        physicsWorld.gravity = CGVector(dx: 0, dy: -9.8)
+        physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         physicsWorld.contactDelegate = self
-            createPlayer()
-        
-        motionManager = CMMotionManager()
         motionManager.startAccelerometerUpdates()
-
+        
+        let positions = MarbleLoader.loadPositions()
+        print("🔵 Loaded \(positions.count) marbles")
+        
+        // 🟠 Load target vortex positions from JSON
+        loadTargetPattern()
+        
+        
+        // 🌀 Add all vortex spots now that we have positions
+        for pos in targetPositions {
+            addVortex(at: pos)
+        }
+        
+        //        //adds 1 vortex in the middle
+        //        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
+        
+        // 🌌 Add background image
+        let background = SKSpriteNode(imageNamed: "handshake.jpeg") // use your image name
+        background.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        background.zPosition = -1
+        background.size = size
+        addChild(background)
+        
+        // ⚪ Spawn marbles to match target pattern
+        spawnMarbles(count: targetPositions.count)
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        lastTouchPosition = location
+    func loadTargetPattern() {
+        
+        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") {
+            print("📄 Found file at: \(url)")
+            do {
+                let data = try Data(contentsOf: url)
+                let decoded = try JSONDecoder().decode([MarblePosition].self, from: data)
+                targetPositions = decoded.map { $0.cgPoint }
+                print("🌀 Loaded \(targetPositions.count) vortex positions")
+            } catch {
+                print("❌ JSON decode failed: \(error)")
+            }
+        } else {
+            print("❌ Could not find JSON file in bundle")
+        }
     }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        lastTouchPosition = location
+    
+    func addVortex(at position: CGPoint) {
+        let vortex = SKSpriteNode(imageNamed: "vortex") // your vortex image
+        vortex.name = "vortex"
+        vortex.position = position
+        vortex.zPosition = 1
+        vortex.setScale(0.5)
+        
+        vortex.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
+        
+        // 🔧 Use slightly smaller collision radius than image
+        let bodyRadius = (vortex.size.width * 0.5) * 0.4
+        vortex.physicsBody = SKPhysicsBody(circleOfRadius: bodyRadius)
+        vortex.physicsBody?.isDynamic = false
+        vortex.physicsBody?.categoryBitMask = 1 << 1
+        vortex.physicsBody?.contactTestBitMask = 1 << 0 // detect marble proximity
+        vortex.physicsBody?.collisionBitMask = 0 // ❌ NO collision — marble will pass through
+        
+        vortexNodes.append(vortex)
+        addChild(vortex)
     }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        lastTouchPosition = nil
+    
+    func spawnMarbles(count: Int) {
+        for _ in 0..<count {
+            let marble = SKSpriteNode(imageNamed: "ballGrey")
+            marble.name = "ballGrey"
+            marble.size = CGSize(width: 24, height: 24)
+            marble.position = CGPoint(x: CGFloat.random(in: 0...size.width),
+                                      y: CGFloat.random(in: 0...size.height))
+            marble.physicsBody = SKPhysicsBody(circleOfRadius: 12) //4
+            marble.physicsBody?.restitution = 0.6
+            marble.physicsBody?.friction = 0.1
+            marble.physicsBody?.linearDamping = 0.4
+            marble.physicsBody?.allowsRotation = true
+            marble.physicsBody?.categoryBitMask = 1 << 0
+            marble.physicsBody?.contactTestBitMask = 1 << 1 // to detect vortex
+            marble.physicsBody?.collisionBitMask = 1 << 0 //0xFFFFFFFF // collide only with other things (like frame)
+            marbles.append(marble)
+            addChild(marble)
+        }
     }
-
+    
+    //    func lockMarble(_ marble: SKSpriteNode, at position: CGPoint) {
+    //        marble.position = position
+    //        marble.physicsBody = nil // disable physics
+    //        marble.zPosition = 2
+    //        marble.color = .green
+    //        marble.colorBlendFactor = 0.6
+    //    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        let nodeA = contact.bodyA.node
+        let nodeB = contact.bodyB.node
+        
+        var marble: SKNode?
+        var vortex: SKNode?
+        
+        // Identify which is which
+        if nodeA?.name == "ballGrey" && nodeB?.name == "vortex" {
+            marble = nodeA
+            vortex = nodeB
+        } else if nodeB?.name == "ballGrey" && nodeA?.name == "vortex" {
+            marble = nodeB
+            vortex = nodeA
+        }
+        
+        //        // Lock the marble to the vortex
+        //        if let marble = marble, let vortex = vortex {
+        //            marble.physicsBody?.velocity = .zero
+        //            marble.physicsBody?.angularVelocity = 0
+        //            marble.physicsBody?.isDynamic = false
+        //            marble.position = vortex.position
+        //            print("🔒 Marble locked to vortex")
+        //        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
-    #if targetEnvironment(simulator)
-        if let currentTouch = lastTouchPosition {
-            let diff = CGPoint(x: currentTouch.x - player.position.x, y: currentTouch.y - player.position.y)
-            physicsWorld.gravity = CGVector(dx: diff.x / 100, dy: diff.y / 100)
-        }
-    #else
-        if let accelerometerData = motionManager.accelerometerData {
-            physicsWorld.gravity = CGVector(dx: accelerometerData.acceleration.y * -50, dy: accelerometerData.acceleration.x * 50)
-        }
-    #endif
-    }
-
-    func createVortex(at position: CGPoint, count: Int) {
-        let node = SKSpriteNode(imageNamed: "vortex")
-        node.name = "vortex\(count)"
-        node.position = position
-        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-        node.physicsBody?.isDynamic = false
-        node.physicsBody?.collisionBitMask = 0
-
-        let categoryBitMask = CollisionTypes(rawValue: UInt32(count + 4))?.rawValue ?? CollisionTypes.vortex1.rawValue
-        node.physicsBody?.categoryBitMask = categoryBitMask
-
-        addChild(node)
-    }
-    
-    func loadLevel() {
-        guard let levelURL = Bundle.main.url(forResource: "level3", withExtension: "txt") else {
-            fatalError("Could not find level1.txt in the app bundle.")
-        }
-        guard let levelString = try? String(contentsOf: levelURL) else {
-            fatalError("Could not load level1.txt from the app bundle.")
-        }
-        
-        let lines = levelString.components(separatedBy: "\n")
-        
-        for (row, line) in lines.reversed().enumerated() {
-            for (column, letter) in line.enumerated() {
-//                if "level1"
-//                let position = CGPoint(x: (64 * column) + 32, y: (64 * row) - 32)
-//                if "level2"
-//                let position = CGPoint(x: (32 * column) + 32, y: (32 * row) - 32)
-//                if "level3"
-                let position = CGPoint(x: (16 * column) + 32, y: (16 * row) - 32)
+        if let data = motionManager.accelerometerData {
+            let acc = data.acceleration
+            
+            // Shake intensity logic
+            if let last = lastAcceleration {
+                let deltaX = acc.x - last.x
+                let deltaY = acc.y - last.y
+                let deltaZ = acc.z - last.z
                 
-                if letter == "x" {
-                    let node = SKSpriteNode(imageNamed: "block")
-                    node.position = position
-                    node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
-                    node.physicsBody?.categoryBitMask = CollisionTypes.wall.rawValue
-                    node.physicsBody?.isDynamic = false
-                    addChild(node)
-                }else if letter == "b" {
-                    let node = SKSpriteNode(imageNamed: "ballGrey")
-                    node.position = position
-                    node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 2)
-                    //node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
-                    node.physicsBody?.categoryBitMask = CollisionTypes.ball1.rawValue
-                    node.physicsBody?.isDynamic = true
-                    addChild(node)
-                } else if letter == "v"  {
-                    count = count + 1
-                    if "vortex\(count)" == "vortex1" {
-                    }
+                let shakeMagnitude = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+                
+                if shakeMagnitude > shakeThreshold {
+                    print("🤳 Shake detected! Magnitude: \(shakeMagnitude)")
+                    resetAfterShake()
+                }
+                
+            }
+            
+            lastAcceleration = acc
+            
+            // Gravity tilt (keep your existing code)
+            let tiltX = data.acceleration.y
+            let tiltY = data.acceleration.x
+            physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
+        }
+        // Golf-hole style sink logic
+        for marble in marbles {
+            guard marble.physicsBody?.isDynamic == true else { continue }
+            
+            for vortex in vortexNodes {
+                let dx = vortex.position.x - marble.position.x
+                let dy = vortex.position.y - marble.position.y
+                let distance = sqrt(dx*dx + dy*dy)
+                
+                let velocity = marble.physicsBody?.velocity ?? .zero
+                  let speed = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
 
-                    if "vortex\(count)" == "vortex2" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
+                  if distance < 6 && speed < 60 { // ⛳️ Only sink if slow and centered
+//                if distance < 6 { // smaller radius means tighter "hole"
+                    // Sink marble into vortex
+                    marble.position = vortex.position
+                    marble.physicsBody?.velocity = .zero
+                    marble.physicsBody?.angularVelocity = 0
+                    marble.physicsBody?.isDynamic = false
+                    marble.zPosition = vortex.zPosition + 1
+                    marble.setScale(0.8) // Optional visual scale down
+                    marble.run(SKAction.fadeAlpha(to: 1.0, duration: 0.2))
+                    if let sprite = marble as? SKSpriteNode {
+                        if !sunkMarbles.contains(sprite) {
+                            sunkMarbles.append(sprite)
+                        }
                     }
-                    if "vortex\(count)" == "vortex3" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
-                    }
-                    if "vortex\(count)" == "vortex4" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
-                    }
-                    if "vortex\(count)" == "vortex5" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
-                    }
-                    if "vortex\(count)" == "vortex6" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
-                    }
-                    if "vortex\(count)" == "vortex7" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
-                    }
-                    if "vortex\(count)" == "vortex8" {
-                        let node = SKSpriteNode(imageNamed: "vortex")
-                        node.name = "vortex\(count)"
-                        NSLog("vortex\(count)")
-                        node.position = position
-                        node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
-                        node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 8)
-                        node.physicsBody?.isDynamic = false
-                        node.physicsBody?.categoryBitMask = CollisionTypes.vortex2.rawValue
-                        node.physicsBody?.collisionBitMask = 0
-                        addChild(node)
-                    }
-                } else if letter == "s"  {
-
-                } else if letter == "f"  {
-
-                } else if letter == " " {
-                    // this is an empty space – do nothing!
-                } else {
-                    fatalError("Unknown level letter: \(letter)")
+                    sunkMarbles.append(marble)
+                    print("⛳️ Marble sunk into vortex at \(vortex.position)")
+                    break
                 }
             }
         }
     }
-    func createPlayer() {
-        player = SKSpriteNode(imageNamed: "ballRed")
-        player.position = CGPoint(x: (Int (arc4random_uniform(856) + 50)), y: (Int (arc4random ()) % 472)) //(x: 396, y: 472)
-        player.zPosition = 1
-        player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width / 2)
-        player.physicsBody?.allowsRotation = false
-        player.physicsBody?.linearDamping = 0.5
-
-        player.physicsBody?.categoryBitMask = CollisionTypes.player.rawValue
-        player.physicsBody?.contactTestBitMask = CollisionTypes.vortex1.rawValue | CollisionTypes.vortex2.rawValue | CollisionTypes.vortex3.rawValue | CollisionTypes.vortex4.rawValue | CollisionTypes.vortex5.rawValue | CollisionTypes.vortex6.rawValue | CollisionTypes.finish.rawValue
-        player.physicsBody?.collisionBitMask = CollisionTypes.wall.rawValue | CollisionTypes.player.rawValue | CollisionTypes.ball1.rawValue
-        addChild(player)
-    }
     
-    func didBegin(_ contact: SKPhysicsContact) {
-        guard let nodeA = contact.bodyA.node else { return }
-        guard let nodeB = contact.bodyB.node else { return }
+    func resetAfterShake() {
+        // Reuse marbles
+        for marble in sunkMarbles {
+            // Re-enable physics
+            marble.physicsBody = SKPhysicsBody(circleOfRadius: 12)
+            marble.physicsBody?.restitution = 0.6
+            marble.physicsBody?.friction = 0.1
+            marble.physicsBody?.linearDamping = 0.4
+            marble.physicsBody?.allowsRotation = true
+            marble.physicsBody?.categoryBitMask = 1 << 0
+            marble.physicsBody?.collisionBitMask = 1 << 0
+
+            // Reset scale and position to bounce away
+            marble.setScale(1.0)
+            marble.alpha = 1.0
+
+            // Launch upward a bit
+            marble.position.y += 20
+            marble.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 50))
+        }
+
+        print("🔄 Reused \(sunkMarbles.count) marbles from vortex")
+        sunkMarbles.removeAll()
         
-        if nodeA == player {
-            ball1Collided(with: nodeB)
-        } else if nodeB == player {
-            ball1Collided(with: nodeA)
+        // Refresh vortex animations (optional)
+        for vortex in vortexNodes {
+            vortex.removeAllActions()
+            vortex.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
+
+            // Optional: flash or wobble on reset
+            let flash = SKAction.sequence([
+                SKAction.fadeAlpha(to: 0.5, duration: 0.1),
+                SKAction.fadeAlpha(to: 1.0, duration: 0.1)
+            ])
+            vortex.run(SKAction.repeat(flash, count: 2))
         }
+
+        print("🔄 Reset vortex and marble states after shake")
     }
     
-    func ball1Collided(with node: SKNode) {
-        //New balls fall into vortex and they shou;d bounce off
-        guard let name = node.name, name.starts(with: "vortex"),
-              let index = Int(name.dropFirst("vortex".count)),
-              (1...8).contains(index) else { return }
+    ///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
+    //    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        guard let touch = touches.first else { return }
+    //        let location = touch.location(in: self)
+    //
+    //        for vortex in vortexNodes {
+    //            if vortex.contains(location) {
+    //                selectedVortex = vortex
+    //                break
+    //            }
+    //        }
+    //    }
+    //
+    //    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        guard let touch = touches.first, let vortex = selectedVortex else { return }
+    //        let location = touch.location(in: self)
+    //        vortex.position = location
+    //    }
+    //
+    //    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        if let vortex = selectedVortex {
+    //            print("📍 Dropped vortex at: \(vortex.position)")
+    //        }
+    //        selectedVortex = nil
+    //    }
+    //
+    //    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    //        selectedVortex = nil
+    //    }
+    
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        guard motion == .motionShake else { return }
 
-        let spotTakenFlags = [isSpot1Taken, isSpot2Taken, isSpot3Taken, isSpot4Taken,
-                              isSpot5Taken, isSpot6Taken, isSpot7Taken, isSpot8Taken]
+        print("🤳 Device shaken. Checking to remove sunk marbles...")
 
-        if !spotTakenFlags[index - 1] {
-            player.physicsBody?.isDynamic = false
-            score += 1
-
-            switch index {
-            case 1: isSpot1Taken = true
-            case 2: isSpot2Taken = true
-            case 3: isSpot3Taken = true
-            case 4: isSpot4Taken = true
-            case 5: isSpot5Taken = true
-            case 6: isSpot6Taken = true
-            case 7: isSpot7Taken = true
-            case 8: isSpot8Taken = true
-            default: break
-            }
-
-            let move = SKAction.move(to: node.position, duration: 0.25)
-            player.run(SKAction.sequence([move])) { [weak self] in
-                self?.createPlayer()
-            }
+        // Optional: Require minimum number of marbles to trigger
+        if sunkMarbles.isEmpty {
+            print("ℹ️ No sunk marbles to remove.")
+            return
         }
-    }
 
-    func shake() {
-        print("Shake")
-        let shake = SKAction.sequence([
-            SKAction.moveBy(x: 10, y: 0, duration: 0.05),
-            SKAction.moveBy(x: -20, y: 0, duration: 0.1),
-            SKAction.moveBy(x: 10, y: 0, duration: 0.05)
-        ])
-        self.run(shake)        
+        for marble in sunkMarbles {
+            marble.removeFromParent()
+        }
+
+        print("🗑 Removed \(sunkMarbles.count) sunk marbles.")
+        sunkMarbles.removeAll()
     }
+    
+    //    func resetGame() {
+    //        // Remove all marbles
+    //        for marble in marbles {
+    //            marble.removeFromParent()
+    //        }
+    //        marbles.removeAll()
+    //        //lockedMarbles.removeAll()
+    //
+    //        // Optional: remove any sparks or effects
+    //        for child in children where child.name == "effect" {
+    //            child.removeFromParent()
+    //        }
+    //
+    //         //Spawn fresh marbles
+    //        spawnMarbles(count: targetPositions.count)
+    //    }
+    
 }

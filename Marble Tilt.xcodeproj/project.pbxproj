@@ -3,42 +3,52 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F5E273792DB00FDB95B /* GameScene.sks */; };
-		D57C3F63273792DB00FDB95B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C3F62273792DB00FDB95B /* GameScene.swift */; };
-		D57C3F65273792DB00FDB95B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D57C3F64273792DB00FDB95B /* GameViewController.swift */; };
 		D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F69273792DC00FDB95B /* Assets.xcassets */; };
 		D57C3F742737BB9F00FDB95B /* level1.txt in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F732737BB9F00FDB95B /* level1.txt */; };
-		D5A3293A2E40B3C100C65E36 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A329392E40B3C100C65E36 /* GameView.swift */; };
 		D5A3293C2E40B3E000C65E36 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293B2E40B3E000C65E36 /* ContentView.swift */; };
 		D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293F2E40B72600C65E36 /* MarblesApp.swift */; };
 		D5A329B82E4100D300C65E36 /* handshake.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = D5A329B72E4100D300C65E36 /* handshake.jpeg */; };
 		D5BEEE542AFF1FD200D44ED6 /* level2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D5BEEE532AFF1FD200D44ED6 /* level2.txt */; };
 		D5BEEE562AFF235B00D44ED6 /* level3.txt in Resources */ = {isa = PBXBuildFile; fileRef = D5BEEE552AFF235B00D44ED6 /* level3.txt */; };
+		D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C052E447AE700A8991A /* GameViewController.swift */; };
+		D5BF2C0E2E447AE700A8991A /* MarbleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C092E447AE700A8991A /* MarbleGameView.swift */; };
+		D5BF2C0F2E447AE700A8991A /* MarblePosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C0A2E447AE700A8991A /* MarblePosition.swift */; };
+		D5BF2C102E447AE700A8991A /* PatternEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C0B2E447AE700A8991A /* PatternEditorView.swift */; };
+		D5BF2C112E447AE700A8991A /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C0C2E447AE700A8991A /* ShareSheet.swift */; };
+		D5BF2C122E447AE700A8991A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C032E447AE700A8991A /* GameScene.swift */; };
+		D5BF2C132E447AE700A8991A /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C042E447AE700A8991A /* GameView.swift */; };
+		D5BF2C142E447AE700A8991A /* marble_positions_handshake.json in Resources */ = {isa = PBXBuildFile; fileRef = D5BF2C062E447AE700A8991A /* marble_positions_handshake.json */; };
+		D5BF2C152E447AE700A8991A /* marble_positions_handshake_scaled_ipad.json in Resources */ = {isa = PBXBuildFile; fileRef = D5BF2C072E447AE700A8991A /* marble_positions_handshake_scaled_ipad.json */; };
+		D5BF2C162E447AE700A8991A /* marble_positions_handshake_scaled_ipad-2.json in Resources */ = {isa = PBXBuildFile; fileRef = D5BF2C082E447AE700A8991A /* marble_positions_handshake_scaled_ipad-2.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D57C3F59273792DB00FDB95B /* Marble Tilt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Marble Tilt.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D57C3F5E273792DB00FDB95B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		D57C3F62273792DB00FDB95B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		D57C3F64273792DB00FDB95B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		D57C3F69273792DC00FDB95B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D57C3F732737BB9F00FDB95B /* level1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level1.txt; sourceTree = "<group>"; };
 		D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Marble-Tilt-Info.plist"; sourceTree = SOURCE_ROOT; };
-		D5A329392E40B3C100C65E36 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		D5A3293B2E40B3E000C65E36 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5A3293F2E40B72600C65E36 /* MarblesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblesApp.swift; sourceTree = "<group>"; };
 		D5A329B72E4100D300C65E36 /* handshake.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = handshake.jpeg; sourceTree = "<group>"; };
 		D5BEEE532AFF1FD200D44ED6 /* level2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = level2.txt; sourceTree = "<group>"; };
 		D5BEEE552AFF235B00D44ED6 /* level3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = level3.txt; sourceTree = "<group>"; };
+		D5BF2C032E447AE700A8991A /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		D5BF2C042E447AE700A8991A /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		D5BF2C052E447AE700A8991A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		D5BF2C062E447AE700A8991A /* marble_positions_handshake.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = marble_positions_handshake.json; sourceTree = "<group>"; };
+		D5BF2C072E447AE700A8991A /* marble_positions_handshake_scaled_ipad.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = marble_positions_handshake_scaled_ipad.json; sourceTree = "<group>"; };
+		D5BF2C082E447AE700A8991A /* marble_positions_handshake_scaled_ipad-2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "marble_positions_handshake_scaled_ipad-2.json"; sourceTree = "<group>"; };
+		D5BF2C092E447AE700A8991A /* MarbleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarbleGameView.swift; sourceTree = "<group>"; };
+		D5BF2C0A2E447AE700A8991A /* MarblePosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblePosition.swift; sourceTree = "<group>"; };
+		D5BF2C0B2E447AE700A8991A /* PatternEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatternEditorView.swift; sourceTree = "<group>"; };
+		D5BF2C0C2E447AE700A8991A /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		D5A329882E40C2BD00C65E36 /* New Code */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "New Code"; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D57C3F56273792DB00FDB95B /* Frameworks */ = {
@@ -72,11 +82,17 @@
 			children = (
 				D5A3293F2E40B72600C65E36 /* MarblesApp.swift */,
 				D5A3293B2E40B3E000C65E36 /* ContentView.swift */,
-				D5A329392E40B3C100C65E36 /* GameView.swift */,
-				D5A329882E40C2BD00C65E36 /* New Code */,
-				D57C3F64273792DB00FDB95B /* GameViewController.swift */,
+				D5BF2C032E447AE700A8991A /* GameScene.swift */,
+				D5BF2C042E447AE700A8991A /* GameView.swift */,
+				D5BF2C052E447AE700A8991A /* GameViewController.swift */,
+				D5BF2C062E447AE700A8991A /* marble_positions_handshake.json */,
+				D5BF2C072E447AE700A8991A /* marble_positions_handshake_scaled_ipad.json */,
+				D5BF2C082E447AE700A8991A /* marble_positions_handshake_scaled_ipad-2.json */,
+				D5BF2C092E447AE700A8991A /* MarbleGameView.swift */,
+				D5BF2C0A2E447AE700A8991A /* MarblePosition.swift */,
+				D5BF2C0B2E447AE700A8991A /* PatternEditorView.swift */,
+				D5BF2C0C2E447AE700A8991A /* ShareSheet.swift */,
 				D57C3F5E273792DB00FDB95B /* GameScene.sks */,
-				D57C3F62273792DB00FDB95B /* GameScene.swift */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
 				D5A329B72E4100D300C65E36 /* handshake.jpeg */,
 				D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */,
@@ -101,9 +117,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				D5A329882E40C2BD00C65E36 /* New Code */,
 			);
 			name = "Marble Tilt";
 			productName = "Marble Tilt";
@@ -152,6 +165,9 @@
 				D57C3F742737BB9F00FDB95B /* level1.txt in Resources */,
 				D5BEEE542AFF1FD200D44ED6 /* level2.txt in Resources */,
 				D5A329B82E4100D300C65E36 /* handshake.jpeg in Resources */,
+				D5BF2C142E447AE700A8991A /* marble_positions_handshake.json in Resources */,
+				D5BF2C152E447AE700A8991A /* marble_positions_handshake_scaled_ipad.json in Resources */,
+				D5BF2C162E447AE700A8991A /* marble_positions_handshake_scaled_ipad-2.json in Resources */,
 				D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */,
 				D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */,
 			);
@@ -164,10 +180,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D57C3F63273792DB00FDB95B /* GameScene.swift in Sources */,
+				D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */,
+				D5BF2C0E2E447AE700A8991A /* MarbleGameView.swift in Sources */,
+				D5BF2C0F2E447AE700A8991A /* MarblePosition.swift in Sources */,
+				D5BF2C102E447AE700A8991A /* PatternEditorView.swift in Sources */,
+				D5BF2C112E447AE700A8991A /* ShareSheet.swift in Sources */,
+				D5BF2C122E447AE700A8991A /* GameScene.swift in Sources */,
+				D5BF2C132E447AE700A8991A /* GameView.swift in Sources */,
 				D5A3293C2E40B3E000C65E36 /* ContentView.swift in Sources */,
-				D57C3F65273792DB00FDB95B /* GameViewController.swift in Sources */,
-				D5A3293A2E40B3C100C65E36 /* GameView.swift in Sources */,
 				D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
