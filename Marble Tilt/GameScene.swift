@@ -20,6 +20,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var lastAcceleration: CMAcceleration?
     private var shakeThreshold: Double = 0.7 // Adjust to taste
     
+    var vortices: [CGPoint] = []
+
+    static func loadLevel(levelNumber: Int) -> GameScene {
+        let scene = GameScene(size: CGSize(width: 1024, height: 768))
+        scene.scaleMode = .aspectFill
+        scene.loadVortexData(levelNumber: levelNumber)
+        return scene
+    }
+
+    func loadVortexData(levelNumber: Int) {
+        if let url = Bundle.main.url(forResource: "level\(levelNumber)", withExtension: "json") {
+            do {
+                let data = try Data(contentsOf: url)
+                if let array = try JSONSerialization.jsonObject(with: data) as? [[String: CGFloat]] {
+                    vortices = array.compactMap { dict in
+                        if let x = dict["x"], let y = dict["y"] {
+                            return CGPoint(x: x, y: y)
+                        }
+                        return nil
+                    }
+                }
+            } catch {
+                print("Error loading vortex data: \(error)")
+            }
+        }
+    }
+
     override func didMove(to view: SKView) {
         print("✅ GameScene2 loaded")
         
@@ -57,7 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func loadTargetPattern() {
         
-        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") {
+        if let url = Bundle.main.url(forResource: "adjusted_ipad", withExtension: "json") {
             print("📄 Found file at: \(url)")
             do {
                 let data = try Data(contentsOf: url)
@@ -249,34 +276,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     ///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
-    //    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    //        guard let touch = touches.first else { return }
-    //        let location = touch.location(in: self)
-    //
-    //        for vortex in vortexNodes {
-    //            if vortex.contains(location) {
-    //                selectedVortex = vortex
-    //                break
-    //            }
-    //        }
-    //    }
-    //
-    //    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-    //        guard let touch = touches.first, let vortex = selectedVortex else { return }
-    //        let location = touch.location(in: self)
-    //        vortex.position = location
-    //    }
-    //
-    //    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    //        if let vortex = selectedVortex {
-    //            print("📍 Dropped vortex at: \(vortex.position)")
-    //        }
-    //        selectedVortex = nil
-    //    }
-    //
-    //    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    //        selectedVortex = nil
-    //    }
+//        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//            guard let touch = touches.first else { return }
+//            let location = touch.location(in: self)
+//    
+//            for vortex in vortexNodes {
+//                if vortex.contains(location) {
+//                    selectedVortex = vortex
+//                    break
+//                }
+//            }
+//        }
+//    
+//        override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//            guard let touch = touches.first, let vortex = selectedVortex else { return }
+//            let location = touch.location(in: self)
+//            vortex.position = location
+//        }
+//    
+//        override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//            if let vortex = selectedVortex {
+//                print("📍 Dropped vortex at: \(vortex.position)")
+//            }
+//            selectedVortex = nil
+//        }
+//    
+//        override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+//            selectedVortex = nil
+//        }
     
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         guard motion == .motionShake else { return }

@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    var level: Int
+    
     var body: some View {
 //        PatternEditorView()
         GameView()
