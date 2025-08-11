@@ -4,5 +4,7 @@
 <dict>
 	<key>UIStatusBarHidden~ipad</key>
 	<true/>
+	<key>NSMotionUsageDescription</key>
+	<string>Your using Motion privacy</string>
 </dict>
 </plist>

@@ -6,32 +6,33 @@
 //
 import SwiftUI
 
-struct LevelSelectView: View {
-    let levels = [1] // Only Level 1 for now //= Array(1...30)
-    let unlockedLevels = 10
-    
-    var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 20)], spacing: 20) {
-                ForEach(levels, id: \.self) { level in
-                    NavigationLink {
-                        ContentView(level: 1)
-                    } label: {
-                        LevelButton(level: level, unlocked: true)
-                    }
-                }
-            }
-            .padding()
+//struct LevelSelectView: View {
+//    
+//    let levels = [1] // Only Level 1 for now //= Array(1...30)
+//    let unlockedLevels = 10
+//    
+//    var body: some View {
+//        ScrollView {
+//            LazyVGrid(columns: [GridItem(.flexible(), spacing: 20)], spacing: 20) {
+//                ForEach(levels, id: \.self) { level in
+//                    NavigationLink {
+//                        MainMarbleView(showLevel: true) {
+//                    } label: {
+//                        LevelButton(level: level, unlocked: true)
+//                    }
+//                }
+//            }
+//            .padding()
 //            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
 //                ForEach(levels, id: \.self) { level in
 //                    LevelButton(level: level, unlocked: level <= unlockedLevels)
 //                }
 //            }
 //            .padding()
-        }
-        .navigationTitle("Select Level")
-    }
-}
+//        }
+//        .navigationTitle("Select Level")
+//    }
+//}
 
 struct LevelButton: View {
     var level: Int

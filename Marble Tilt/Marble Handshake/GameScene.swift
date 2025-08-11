@@ -84,7 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func loadTargetPattern() {
         
-        if let url = Bundle.main.url(forResource: "adjusted_ipad", withExtension: "json") {
+        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") {
             print("📄 Found file at: \(url)")
             do {
                 let data = try Data(contentsOf: url)
