@@ -12,8 +12,8 @@ struct MarblesApp: App {
         WindowGroup {
             //PatternEditorView()
             //GameView()
-            //MainMenuView()
-            MainMarbleView()
+            MainMenuView()
+            //MainMarbleView()
             //MainGolfView()
         }
     }

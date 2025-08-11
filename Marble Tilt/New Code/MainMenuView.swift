@@ -7,35 +7,65 @@
 import SwiftUI
 
 struct MainMenuView: View {
-    @State private var showGame = false
-    
+    @State private var showLevel: Int? = nil
+
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-//                NavigationLink("Play") {
-//                    GameView()
-//                }
-                ///If we want full screen get rid of NavigationLink("Play") {
-                Button("Play") {
-                    showGame = true
+        ZStack {
+            if let level = showLevel {
+                if level == 1 {
+                    // Show marbles game container
+                    GameView(level: 1,
+                                   onExit: { withAnimation { showLevel = nil } },
+                                   onHoleCompleted: {
+                                        withAnimation { showLevel = nil }
+                                    })
+                        .transition(.move(edge: .trailing))
+                        .zIndex(1)
+                } else if level == 2 {
+                    // Show golf game container
+                    GameContainerView(level: 2,
+                                      onExit: { withAnimation { showLevel = nil } },
+                                      onHoleCompleted: {
+                                          withAnimation { showLevel = nil }
+                                      })
+                        .transition(.move(edge: .trailing))
+                        .zIndex(1)
                 }
-                .buttonStyle(.borderedProminent)
-                .font(.title)
+            } else {
+                VStack(spacing: 20) {
+                    Text("Multi-Level Game")
+                        .font(.largeTitle)
+                        .bold()
 
-                NavigationLink("Help") {
-                    HelpView()
+                    Button("Play Marble Level 1") {
+                        withAnimation {
+                            showLevel = 1
+                        }
+                    }
+                    .buttonStyle(MainMenuButtonStyle())
+
+                    Button("Play Golf Level 2") {
+                        withAnimation {
+                            showLevel = 2
+                        }
+                    }
+                    .buttonStyle(MainMenuButtonStyle())
                 }
-                .buttonStyle(.bordered)
-                .font(.title)
-
-                Spacer()
+                .transition(.opacity)
             }
-            .padding()
-            .navigationTitle("Marbles")
-            .fullScreenCover(isPresented: $showGame) {
-                MainMarbleView()
-            }
-
         }
+        .animation(.easeInOut, value: showLevel)
+    }
+}
+
+struct MainMenuButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.title2)
+            .frame(minWidth: 220, minHeight: 50)
+            .background(configuration.isPressed ? Color.blue.opacity(0.7) : Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(12)
+            .padding(.horizontal)
     }
 }
