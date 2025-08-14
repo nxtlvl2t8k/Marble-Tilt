@@ -12,6 +12,9 @@
 		D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293F2E40B72600C65E36 /* MarblesApp.swift */; };
 		D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C052E447AE700A8991A /* GameViewController.swift */; };
 		D5BF2C112E447AE700A8991A /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C0C2E447AE700A8991A /* ShareSheet.swift */; };
+		D5F82A142E4DD822009AE1D7 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F82A102E4DD822009AE1D7 /* HelpView.swift */; };
+		D5F82A162E4DD822009AE1D7 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F82A112E4DD822009AE1D7 /* InfoView.swift */; };
+		D5F82A172E4DD822009AE1D7 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F82A132E4DD822009AE1D7 /* MainMenuView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,10 +25,12 @@
 		D5A3293F2E40B72600C65E36 /* MarblesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblesApp.swift; sourceTree = "<group>"; };
 		D5BF2C052E447AE700A8991A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		D5BF2C0C2E447AE700A8991A /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		D5F82A102E4DD822009AE1D7 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		D5F82A112E4DD822009AE1D7 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		D5F82A132E4DD822009AE1D7 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D53C17A02E49810200767564 /* Golf Green */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Golf Green"; sourceTree = "<group>"; };
 		D53C17AE2E4993AF00767564 /* Marble Handshake */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Marble Handshake"; sourceTree = "<group>"; };
 		D5C404C22E45711400EC6338 /* New Code */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "New Code"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -62,9 +67,11 @@
 			children = (
 				D5A3293F2E40B72600C65E36 /* MarblesApp.swift */,
 				D53C17AE2E4993AF00767564 /* Marble Handshake */,
-				D53C17A02E49810200767564 /* Golf Green */,
 				D5C404C22E45711400EC6338 /* New Code */,
 				D5BF2C052E447AE700A8991A /* GameViewController.swift */,
+				D5F82A132E4DD822009AE1D7 /* MainMenuView.swift */,
+				D5F82A102E4DD822009AE1D7 /* HelpView.swift */,
+				D5F82A112E4DD822009AE1D7 /* InfoView.swift */,
 				D5BF2C0C2E447AE700A8991A /* ShareSheet.swift */,
 				D57C3F5E273792DB00FDB95B /* GameScene.sks */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
@@ -89,7 +96,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D53C17A02E49810200767564 /* Golf Green */,
 				D53C17AE2E4993AF00767564 /* Marble Handshake */,
 				D5C404C22E45711400EC6338 /* New Code */,
 			);
@@ -148,6 +154,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5F82A142E4DD822009AE1D7 /* HelpView.swift in Sources */,
+				D5F82A162E4DD822009AE1D7 /* InfoView.swift in Sources */,
+				D5F82A172E4DD822009AE1D7 /* MainMenuView.swift in Sources */,
 				D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */,
 				D5BF2C112E447AE700A8991A /* ShareSheet.swift in Sources */,
 				D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */,

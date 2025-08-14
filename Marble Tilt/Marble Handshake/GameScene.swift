@@ -140,14 +140,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    //    func lockMarble(_ marble: SKSpriteNode, at position: CGPoint) {
-    //        marble.position = position
-    //        marble.physicsBody = nil // disable physics
-    //        marble.zPosition = 2
-    //        marble.color = .green
-    //        marble.colorBlendFactor = 0.6
-    //    }
-    
     func didBegin(_ contact: SKPhysicsContact) {
         let nodeA = contact.bodyA.node
         let nodeB = contact.bodyB.node
@@ -163,15 +155,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             marble = nodeB
             vortex = nodeA
         }
-        
-        //        // Lock the marble to the vortex
-        //        if let marble = marble, let vortex = vortex {
-        //            marble.physicsBody?.velocity = .zero
-        //            marble.physicsBody?.angularVelocity = 0
-        //            marble.physicsBody?.isDynamic = false
-        //            marble.position = vortex.position
-        //            print("🔒 Marble locked to vortex")
-        //        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -200,6 +183,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let tiltY = data.acceleration.x
             physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
         }
+        
         // Golf-hole style sink logic
         for marble in marbles {
             guard marble.physicsBody?.isDynamic == true else { continue }
@@ -213,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                   let speed = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
 
                   if distance < 6 && speed < 60 { // ⛳️ Only sink if slow and centered
-//                if distance < 6 { // smaller radius means tighter "hole"
+
                     // Sink marble into vortex
                     marble.position = vortex.position
                     marble.physicsBody?.velocity = .zero
@@ -229,7 +213,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     }
                     sunkMarbles.append(marble)
                     print("⛳️ Marble sunk into vortex at \(vortex.position)")
-                    break
+//                      print("⛳️ Marble vissually sunk (no loss)")
+                      break
                 }
             }
         }
@@ -237,26 +222,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func resetAfterShake() {
         // Reuse marbles
-        for marble in sunkMarbles {
-            // Re-enable physics
-            marble.physicsBody = SKPhysicsBody(circleOfRadius: 12)
-            marble.physicsBody?.restitution = 0.6
-            marble.physicsBody?.friction = 0.1
-            marble.physicsBody?.linearDamping = 0.4
-            marble.physicsBody?.allowsRotation = true
-            marble.physicsBody?.categoryBitMask = 1 << 0
-            marble.physicsBody?.collisionBitMask = 1 << 0
+        for marble in marbles {
+            // Reset physics body
+            if marble.physicsBody == nil {
+                marble.physicsBody = SKPhysicsBody(circleOfRadius: 12)
+                marble.physicsBody?.restitution = 0.6
+                marble.physicsBody?.friction = 0.1
+                marble.physicsBody?.linearDamping = 0.4
+                marble.physicsBody?.allowsRotation = true
+                marble.physicsBody?.categoryBitMask = 1 << 0
+                marble.physicsBody?.collisionBitMask = 1 << 0
+            }
+
+            marble.physicsBody?.isDynamic = true
+            marble.physicsBody?.velocity = .zero
+            marble.physicsBody?.angularVelocity = 0
 
             // Reset scale and position to bounce away
             marble.setScale(1.0)
             marble.alpha = 1.0
 
-            // Launch upward a bit
-            marble.position.y += 20
-            marble.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 50))
-        }
+//            // Launch upward a bit
+//            marble.position.y += 20
+//            marble.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 50))
+//        }
+        
+        // Slight bounce to show shake effect
+         marble.physicsBody?.applyImpulse(CGVector(dx: CGFloat.random(in: -30...30),
+                                                   dy: CGFloat.random(in: 10...50)))
+     }
 
-        print("🔄 Reused \(sunkMarbles.count) marbles from vortex")
+        print("🔄 Reused \(marbles.count) marbles from vortex")
         sunkMarbles.removeAll()
         
         // Refresh vortex animations (optional)
@@ -275,6 +271,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("🔄 Reset vortex and marble states after shake")
     }
     
+//MARK: Edit and Move vortex
+    ///DO NOT DELETE
     ///This is used to move vortex and get the co-ordinates.  Using marble_positions_handshake_scaled_ipad-2
 //        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 //            guard let touch = touches.first else { return }
@@ -323,22 +321,4 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("🗑 Removed \(sunkMarbles.count) sunk marbles.")
         sunkMarbles.removeAll()
     }
-    
-    //    func resetGame() {
-    //        // Remove all marbles
-    //        for marble in marbles {
-    //            marble.removeFromParent()
-    //        }
-    //        marbles.removeAll()
-    //        //lockedMarbles.removeAll()
-    //
-    //        // Optional: remove any sparks or effects
-    //        for child in children where child.name == "effect" {
-    //            child.removeFromParent()
-    //        }
-    //
-    //         //Spawn fresh marbles
-    //        spawnMarbles(count: targetPositions.count)
-    //    }
-    
 }

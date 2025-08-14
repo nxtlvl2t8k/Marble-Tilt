@@ -22,11 +22,11 @@ struct HelpView: View {
                 
                 Divider()
                 
-                Text("Power-Ups")
-                    .font(.title2)
-                GameTipRow(icon: "shield", text: "Protects you from hazards for a short time.")
-                GameTipRow(icon: "timer", text: "Slows time to navigate tricky areas.")
-                GameTipRow(icon: "star", text: "Earn extra points.")
+//                Text("Power-Ups")
+//                    .font(.title2)
+//                GameTipRow(icon: "shield", text: "Protects you from hazards for a short time.")
+//                GameTipRow(icon: "timer", text: "Slows time to navigate tricky areas.")
+//                GameTipRow(icon: "star", text: "Earn extra points.")
             }
             .padding()
         }

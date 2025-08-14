@@ -8,6 +8,8 @@ import SwiftUI
 
 struct MainMenuView: View {
     @State private var showLevel: Int? = nil
+    @State private var showHelp = false
+    @State private var showInfo = false
 
     var body: some View {
         ZStack {
@@ -50,11 +52,31 @@ struct MainMenuView: View {
                         }
                     }
                     .buttonStyle(MainMenuButtonStyle())
+                    
+                    Button("Help") {
+                        showHelp = true
+                    }
+                    .buttonStyle(MainMenuButtonStyle())
+
+                    Button("Info") {
+                        showInfo = true
+                    }
+                    .buttonStyle(MainMenuButtonStyle())
+
                 }
                 .transition(.opacity)
             }
         }
         .animation(.easeInOut, value: showLevel)
+        // Present Help View modally
+        .sheet(isPresented: $showHelp) {
+            HelpView()
+        }
+        // Present Info View modally
+        .sheet(isPresented: $showInfo) {
+            InfoView()
+        }
+
     }
 }
 
