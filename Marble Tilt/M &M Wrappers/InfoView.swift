@@ -49,7 +49,7 @@ struct InfoView: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("Share Current App").font(.headline)) {
+                Section(header: Text("Prince George Transit")) {
                     Button("Share via SMS") {
                         showingMessage = true
                     }
@@ -58,84 +58,45 @@ struct InfoView: View {
                     }
                 }
                 
-                Section(header: Text("Discover more apps created by us").font(.headline)) {
+                Section(header: Text("Invite to PG Transit")) {
                     Button("Open App Store") {
-                        if let randomApp = apps.randomElement() {
-                            selectedApp = randomApp
-                        }
-                        if let app = selectedApp {
-                            Text("🎲 Selected: \(app.name)")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            
-                            Button("Share Selected via SMS") {
-                                showingMessage = true
-                            }
-                            Button("Share Selected via Email") {
-                                showingMail = true
-                            }
-                            Button("Open in App Store") {
-                                UIApplication.shared.open(app.url)
-                            }
-                        }
+                        UIApplication.shared.open(shareURL)
                     }
                 }
-                .navigationTitle("More Info")
-                .sheet(isPresented: $showingMessage) {
-                    if MFMessageComposeViewController.canSendText() {
-                        MessageComposeView(
-                            recipients: [],
-                            body: selectedApp != nil ?
-                                "Check out \(selectedApp!.name): \(selectedApp!.url.absoluteString)" :
-                                "Check out Marble Tilt: https://apps.apple.com/ca/app/marble-tilt/id1599878471?mt=8",
-                            result: $messageResult
-                        )
-                    }
-                }
-                .sheet(isPresented: $showingMail) {
-                    if MFMailComposeViewController.canSendMail() {
-                        MailComposeView(
-                            subject: "Check out this app!",
-                            body: selectedApp != nil ?
-                                "I found a cool app: \(selectedApp!.name)\n\n\(selectedApp!.url.absoluteString)" :
-                                "I found a cool app: Marble Tilt\n\nhttps://apps.apple.com/ca/app/marble-tilt/id1599878471?mt=8",
-                            toRecipients: [],
-                            result: $mailResult
-                        )
+                
+                Section(header: Text("Feedback")) {
+                    Button("Send Bug Report Email") {
+                        showingMail = true
                     }
                 }
             }
-            .overlay(alignment: .topTrailing) {
-                Button("Close") { dismiss() }
-                    .padding()
+            .navigationTitle("More Info")
+            .sheet(isPresented: $showingMessage) {
+                if MFMessageComposeViewController.canSendText() {
+                    MessageComposeView(
+                        body: shareText,
+                        recipients: nil,
+                        result: $messageResult
+                    )
+                } else {
+                    Text("This device cannot send messages.")
+                }
+            }
+            .sheet(isPresented: $showingMail) {
+                if MFMailComposeViewController.canSendMail() {
+                    MailComposeView(
+                        subject: mailSubject,
+                        body: shareText,
+                        recipients: nil,
+                        result: $mailResult
+                    )
+                } else {
+                    Text("This device cannot send email.")
+                }
+            }
         }
-        
-//        List {
-//            Section(header: Text("Our Apps").font(.headline)) {
-//                Button("Open Random App") {
-//                    if let randomApp = apps.randomElement() {
-//                        selectedApp = randomApp
-//                        showingRandomApp = true
-//                    }
-//                }
-//            }
-//        }
-//        .alert(item: $selectedApp) { app in
-//            Alert(
-//                title: Text("Open \(app.name)?"),
-//                message: Text("Do you want to go to the App Store for this app?"),
-//                primaryButton: .default(Text("Yes"), action: {
-//                    UIApplication.shared.open(app.url)
-//                }),
-//                secondaryButton: .cancel()
-//            )
-//        }
-//        .navigationTitle("More Info")
-
-
     }
 }
-
 struct ActivityView: UIViewControllerRepresentable {
     let activityItems: [Any]
     
