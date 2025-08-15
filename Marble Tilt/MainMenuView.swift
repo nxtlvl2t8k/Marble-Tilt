@@ -46,12 +46,12 @@ struct MainMenuView: View {
                     }
                     .buttonStyle(MainMenuButtonStyle())
 
-                    Button("Play Golf Level 2") {
-                        withAnimation {
-                            showLevel = 2
-                        }
-                    }
-                    .buttonStyle(MainMenuButtonStyle())
+//                    Button("Play Golf Level 2") {
+//                        withAnimation {
+//                            showLevel = 2
+//                        }
+//                    }
+//                    .buttonStyle(MainMenuButtonStyle())
                     
                     Button("Help") {
                         showHelp = true
