@@ -61,6 +61,13 @@ struct InfoView: View {
                 }
             }
             .navigationTitle("More Info")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Dismiss") {
+                        dismiss()
+                    }
+                }
+            }
             .sheet(isPresented: $showingMessage) {
                 if MFMessageComposeViewController.canSendText() {
                     MessageComposeView(
@@ -84,23 +91,21 @@ struct InfoView: View {
                     Text("This device cannot send email.")
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Dismiss") {
-                        dismiss()
-                    }
-                }
+            .sheet(isPresented: $showActivityView) {
+//                ActivityView(activityItems: [shareText])
+                ShareSheet(activityItems: [shareText])
             }
+
         }
     }
 }
 
-struct ActivityView: UIViewControllerRepresentable {
-    let activityItems: [Any]
-    
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-    }
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
+//struct ActivityView: UIViewControllerRepresentable {
+//    let activityItems: [Any]
+//    
+//    func makeUIViewController(context: Context) -> UIActivityViewController {
+//        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+//    }
+//    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+//}
 
