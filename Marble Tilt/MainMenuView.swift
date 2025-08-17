@@ -32,6 +32,11 @@ struct MainMenuView: View {
                                       })
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
+                } else if level == 0 {
+                    // Show Level Select View
+                    LevelSelectView(showLevel: $showLevel)
+                        .transition(.move(edge: .trailing))
+                        .zIndex(1)
                 }
             } else {
                 VStack(spacing: 20) {
@@ -39,19 +44,10 @@ struct MainMenuView: View {
                         .font(.largeTitle)
                         .bold()
 
-                    Button("Play Marble Level 1") {
-                        withAnimation {
-                            showLevel = 1
-                        }
+                    Button("Select Level") {
+                            showLevel = 0 // Use 0 to mean “open level select”
                     }
                     .buttonStyle(MainMenuButtonStyle())
-
-//                    Button("Play Golf Level 2") {
-//                        withAnimation {
-//                            showLevel = 2
-//                        }
-//                    }
-//                    .buttonStyle(MainMenuButtonStyle())
                     
                     Button("Help") {
                         showHelp = true

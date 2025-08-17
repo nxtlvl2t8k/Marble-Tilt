@@ -7,50 +7,41 @@
 import SwiftUI
 ///Not used yet
 ///
-//struct LevelSelectView: View {
-//    
-//    let levels = [1] // Only Level 1 for now //= Array(1...30)
-//    let unlockedLevels = 10
-//    
-//    var body: some View {
-//        ScrollView {
-//            LazyVGrid(columns: [GridItem(.flexible(), spacing: 20)], spacing: 20) {
-//                ForEach(levels, id: \.self) { level in
-//                    NavigationLink {
-//                        MainMarbleView(showLevel: true) {
-//                    } label: {
-//                        LevelButton(level: level, unlocked: true)
-//                    }
-//                }
-//            }
-//            .padding()
-//            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
-//                ForEach(levels, id: \.self) { level in
-//                    LevelButton(level: level, unlocked: level <= unlockedLevels)
-//                }
-//            }
-//            .padding()
-//        }
-//        .navigationTitle("Select Level")
-//    }
-//}
+struct LevelSelectView: View {
+    @Binding var showLevel: Int?
+    let levels = [1, 2]
+    let unlockedLevels = 2
+    
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 20)], spacing: 20) {
+                ForEach(levels, id: \.self) { level in
+                    LevelButton(level: level, unlocked: level <= unlockedLevels) {
+                        withAnimation {
+                            showLevel = level
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("Select Level")
+    }
+}
 
 struct LevelButton: View {
     var level: Int
     var unlocked: Bool
-    
+    var action: () -> Void
+
     var body: some View {
-        Button(action: {
-            if unlocked {
-                // Load the level in SpriteKit
-            }
-        }) {
+        Button(action: { if unlocked { action() } }) {
             ZStack {
                 RoundedRectangle(cornerRadius: 15)
                     .fill(unlocked ? Color.blue : Color.gray)
                     .frame(height: 80)
                 if unlocked {
-                    Text("\(level)")
+                    Text(level == 1 ? "Marbles" : "Golf")
                         .font(.largeTitle)
                         .foregroundColor(.white)
                 } else {

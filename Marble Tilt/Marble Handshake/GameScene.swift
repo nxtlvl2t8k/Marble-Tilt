@@ -122,7 +122,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func spawnMarbles(count: Int) {
         for _ in 0..<count {
-            let marble = SKSpriteNode(imageNamed: "ballGrey")
+            //let marble = createGoldMarble(size: CGSize(width: 24, height: 24))
+            let marble = SKSpriteNode(imageNamed: "ballGold")
             marble.name = "ballGrey"
             marble.size = CGSize(width: 24, height: 24)
             marble.position = CGPoint(x: CGFloat.random(in: 0...size.width),
