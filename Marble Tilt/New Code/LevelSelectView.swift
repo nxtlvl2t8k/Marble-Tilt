@@ -10,7 +10,7 @@ import SwiftUI
 struct LevelSelectView: View {
     @Binding var showLevel: Int?
     let levels = [1, 2]
-    let unlockedLevels = 2
+    let unlockedLevels = 1 // 2
     
     var body: some View {
         ScrollView {

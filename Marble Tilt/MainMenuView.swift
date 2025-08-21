@@ -54,7 +54,7 @@ struct MainMenuView: View {
                     }
                     .buttonStyle(MainMenuButtonStyle())
 
-                    Button("Info") {
+                    Button("About Us") {
                         showInfo = true
                     }
                     .buttonStyle(MainMenuButtonStyle())
@@ -70,7 +70,7 @@ struct MainMenuView: View {
         }
         // Present Info View modally
         .sheet(isPresented: $showInfo) {
-            InfoView()
+            AboutUsView()
         }
 
     }

@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "Gold%20Ball.G03.watermarked.2k.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "ballGold.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

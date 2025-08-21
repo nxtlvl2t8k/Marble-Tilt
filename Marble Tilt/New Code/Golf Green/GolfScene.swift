@@ -97,7 +97,7 @@ class GolfScene: SKScene, SKPhysicsContactDelegate {
     }
 
     private func setupBall() {
-        ball = SpriteKit.SKSpriteNode(imageNamed: "ballCyan") // supply asset or replace with shape
+        ball = SpriteKit.SKSpriteNode(imageNamed: "ballGolfWhite") // supply asset or replace with shape
         if ball.texture == nil {
             // fallback to circle
             ball = SKSpriteNode(circleOfRadius: ballRadius)
