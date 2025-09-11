@@ -15,18 +15,29 @@ struct GameView: View {
     var onHoleCompleted: () -> Void
 
     // Keep a Scene reference so we can size it to the view if needed
-    @State private var scene: GameScene = GameScene(size: CGSize(width: 1024, height: 768))
+    @State private var scene: GameScene? // = GameScene(size: CGSize(width: 1024, height: 768))
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             // SpriteKit view: use .resizeFill so the scene fills the SwiftUI view
-            SpriteView(scene: scene)
-                .ignoresSafeArea()
-                .onAppear {
-//                    scene.configureFor(level: level)
-//                    scene.holeCompletedCallback = {
-//                        onHoleCompleted()
-//                    }
+            if let scene = scene {
+                SpriteView(scene: scene)
+                    .ignoresSafeArea()
+                    .onAppear {
+                        scene.holeCompletedCallback = {
+                            onHoleCompleted()
+                        }
+                    }
+//            SpriteView(scene: scene)
+//                .ignoresSafeArea()
+//                .onAppear {
+//                    // Create the right scene for this level
+//                    scene = GameScene.loadLevel(levelNumber: level)
+//                    scene.scaleMode = .resizeFill
+////                    scene.configureFor(level: level)
+////                    scene.holeCompletedCallback = {
+////                        onHoleCompleted()
+////                    }
                 }
 
             // Floating back button (game-like)
@@ -50,6 +61,12 @@ struct GameView: View {
             }
             .padding(.top, 40)
             .padding(.leading, 8)
+        }
+        .onAppear {
+            // Create scene once view appears
+            let newScene = GameScene.loadLevel(levelNumber: level)
+            newScene.scaleMode = .resizeFill
+            scene = newScene
         }
     }
 }

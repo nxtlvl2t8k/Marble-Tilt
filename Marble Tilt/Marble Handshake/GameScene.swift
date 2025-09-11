@@ -19,14 +19,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var selectedVortex: SKSpriteNode?
     private var lastAcceleration: CMAcceleration?
     private var shakeThreshold: Double = 0.7 // Adjust to taste
-    
+    var holeCompletedCallback: (() -> Void)?
     var vortices: [CGPoint] = []
 
     static func loadLevel(levelNumber: Int) -> GameScene {
         let scene = GameScene(size: CGSize(width: 1024, height: 768))
         scene.scaleMode = .aspectFill
-        scene.loadVortexData(levelNumber: levelNumber)
+        scene.loadTargetPattern(levelNumber: levelNumber)
+//        scene.loadVortexData(levelNumber: levelNumber)
         return scene
+    }
+    
+    // MARK: - Load target JSON/patterns
+    func loadTargetPattern(levelNumber: Int) {
+        let filename: String
+        switch levelNumber {
+        case 1: filename = "marble_positions_handshake_scaled_ipad"
+        case 2: filename = "smile"
+        case 3: filename = "elephant"
+        case 4: filename = "sailboat"
+        default: filename = "marble_positions_handshake_scaled_ipad"
+        }
+        
+        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") {
+            print("📄 Found file at: \(url)")
+            do {
+                let data = try Data(contentsOf: url)
+                let decoded = try JSONDecoder().decode([MarblePosition].self, from: data)
+                targetPositions = decoded.map { $0.cgPoint }
+                print("🌀 Loaded \(targetPositions.count) vortex positions")
+            } catch {
+                print("❌ JSON decode failed: \(error)")
+            }
+        } else {
+            print("❌ Could not find JSON file in bundle")
+        }
     }
 
     func loadVortexData(levelNumber: Int) {
@@ -60,7 +87,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("🔵 Loaded \(positions.count) marbles")
         
         // 🟠 Load target vortex positions from JSON
-        loadTargetPattern()
+//        loadTargetPattern()
         
         
         // 🌀 Add all vortex spots now that we have positions
@@ -81,24 +108,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // ⚪ Spawn marbles to match target pattern
         spawnMarbles(count: targetPositions.count)
     }
-    
-    func loadTargetPattern() {
         
-        if let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") {
-            print("📄 Found file at: \(url)")
-            do {
-                let data = try Data(contentsOf: url)
-                let decoded = try JSONDecoder().decode([MarblePosition].self, from: data)
-                targetPositions = decoded.map { $0.cgPoint }
-                print("🌀 Loaded \(targetPositions.count) vortex positions")
-            } catch {
-                print("❌ JSON decode failed: \(error)")
-            }
-        } else {
-            print("❌ Could not find JSON file in bundle")
-        }
-    }
-    
     func addVortex(at position: CGPoint) {
         let vortex = SKSpriteNode(imageNamed: "vortex") // your vortex image
         vortex.name = "vortex"

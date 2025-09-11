@@ -1,0 +1,41 @@
+struct MarbleShape {
+    static let smile: [CGPoint] = [
+        CGPoint(x: 200, y: 200), // left eye
+        CGPoint(x: 300, y: 200), // right eye
+        CGPoint(x: 150, y: 300),
+        CGPoint(x: 180, y: 330),
+        CGPoint(x: 220, y: 350),
+        CGPoint(x: 270, y: 350),
+        CGPoint(x: 310, y: 330),
+        CGPoint(x: 340, y: 300)
+    ]
+    
+    static let elephant: [CGPoint] = [
+        CGPoint(x: 200, y: 300),
+        CGPoint(x: 250, y: 300),
+        CGPoint(x: 300, y: 290),
+        CGPoint(x: 340, y: 280),
+        CGPoint(x: 380, y: 300),
+        CGPoint(x: 400, y: 320),
+        CGPoint(x: 420, y: 340),
+        CGPoint(x: 400, y: 360),
+        CGPoint(x: 380, y: 340),
+        CGPoint(x: 360, y: 260),
+        CGPoint(x: 340, y: 280),
+        CGPoint(x: 210, y: 350),
+        CGPoint(x: 260, y: 350),
+        CGPoint(x: 310, y: 350)
+    ]
+    
+    static let sailboat: [CGPoint] = [
+        CGPoint(x: 200, y: 350),
+        CGPoint(x: 300, y: 350),
+        CGPoint(x: 280, y: 330),
+        CGPoint(x: 220, y: 330),
+        CGPoint(x: 250, y: 330),
+        CGPoint(x: 250, y: 200),
+        CGPoint(x: 250, y: 200),
+        CGPoint(x: 300, y: 300),
+        CGPoint(x: 250, y: 330)
+    ]
+}
