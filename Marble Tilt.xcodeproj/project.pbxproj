@@ -291,6 +291,7 @@
 				INFOPLIST_FILE = "Marble-Tilt-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Marble Tilt";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.family-games";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Your using Motion privacy";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
@@ -324,6 +325,7 @@
 				INFOPLIST_FILE = "Marble-Tilt-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Marble Tilt";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.family-games";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Your using Motion privacy";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;

@@ -227,13 +227,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Reset physics body
             if marble.physicsBody == nil {
                 marble.physicsBody = SKPhysicsBody(circleOfRadius: 12)
+            }
                 marble.physicsBody?.restitution = 0.6
                 marble.physicsBody?.friction = 0.1
                 marble.physicsBody?.linearDamping = 0.4
                 marble.physicsBody?.allowsRotation = true
                 marble.physicsBody?.categoryBitMask = 1 << 0
                 marble.physicsBody?.collisionBitMask = 1 << 0
-            }
 
             marble.physicsBody?.isDynamic = true
             marble.physicsBody?.velocity = .zero
@@ -315,11 +315,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
 
-        for marble in sunkMarbles {
-            marble.removeFromParent()
-        }
-
-        print("🗑 Removed \(sunkMarbles.count) sunk marbles.")
-        sunkMarbles.removeAll()
+//        for marble in sunkMarbles {
+//            marble.removeFromParent()
+//        }
+//
+//        print("🗑 Removed \(sunkMarbles.count) sunk marbles.")
+//        sunkMarbles.removeAll()
+        resetAfterShake()
     }
 }
