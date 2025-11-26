@@ -16,6 +16,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var lockedVortexes: Set<SKNode> = []
     var vortexNodes: [SKSpriteNode] = []
     var sunkMarbles: [SKNode] = []
+    var originalMarbleTextures: [SKSpriteNode: SKTexture] = [:]
+
     private var selectedVortex: SKSpriteNode?
     private var lastAcceleration: CMAcceleration?
     private var shakeThreshold: Double = 0.7 // Adjust to taste
@@ -80,6 +82,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // ⚪ Spawn marbles to match target pattern
         spawnMarbles(count: targetPositions.count)
+        
+        if let randomVortex = vortexNodes.randomElement() {
+            selectedVortex = randomVortex
+            print("🎯 Special vortex chosen at \(randomVortex.position)")
+        }
     }
     
     func loadTargetPattern() {
@@ -207,14 +214,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     marble.zPosition = vortex.zPosition + 1
                     marble.setScale(0.8) // Optional visual scale down
                     marble.run(SKAction.fadeAlpha(to: 1.0, duration: 0.2))
-                    if let sprite = marble as? SKSpriteNode {
-                        if !sunkMarbles.contains(sprite) {
-                            sunkMarbles.append(sprite)
+                    //if let sprite = marble as? SKSpriteNode {
+                        if !sunkMarbles.contains(marble) {
+                            sunkMarbles.append(marble)
                         }
-                    }
-                    sunkMarbles.append(marble)
+                    //}
+                    //sunkMarbles.append(marble)
                     print("⛳️ Marble sunk into vortex at \(vortex.position)")
 //                      print("⛳️ Marble vissually sunk (no loss)")
+
+                      if vortex == selectedVortex {
+                          // Save original texture
+                          if originalMarbleTextures[marble] == nil {
+                              originalMarbleTextures[marble] = marble.texture
+                          }
+                          // Change marble to special texture
+                          marble.texture = SKTexture(imageNamed: "ballYellow")
+
+                          // Show bonus popup
+                          showBonusText(at: vortex.position, text: "🎉 Bonus Found!")
+                      }
+//                          showBonusText(at: CGPoint(x: size.width / 2, y: size.height / 2), text: "You have won a Drink")
+//                          //triggerConfetti(at: vortex.position)
+//                      }
+
                       break
                 }
             }
@@ -249,9 +272,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        }
         
         // Slight bounce to show shake effect
-         marble.physicsBody?.applyImpulse(CGVector(dx: CGFloat.random(in: -30...30),
-                                                   dy: CGFloat.random(in: 10...50)))
-     }
+            // Optional: slightly bounce to show shake
+            let randomX = CGFloat.random(in: -30...30)
+            let randomY = CGFloat.random(in: 10...50)
+            marble.physicsBody?.applyImpulse(CGVector(dx: randomX, dy: randomY))
+
+            // Restore original marble texture if it was changed
+            if let originalTexture = originalMarbleTextures[marble] {
+                marble.texture = originalTexture
+                originalMarbleTextures[marble] = nil
+            }
+        }
 
         print("🔄 Reused \(marbles.count) marbles from vortex")
         sunkMarbles.removeAll()
@@ -322,5 +353,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        print("🗑 Removed \(sunkMarbles.count) sunk marbles.")
 //        sunkMarbles.removeAll()
         resetAfterShake()
+    }
+    
+    func triggerConfetti(at position: CGPoint) {
+        guard let confetti = SKEmitterNode(fileNamed: "Confetti.sks") else {
+            print("❌ Confetti.sks not found!")
+            return
+        }
+        confetti.position = position
+        confetti.zPosition = 10
+        addChild(confetti)
+        
+        // Remove after a few seconds
+        confetti.run(SKAction.sequence([
+            SKAction.wait(forDuration: 3),
+            SKAction.removeFromParent()
+        ]))
+        
+        print("🎉 Confetti triggered!")
+    }
+    
+    func showBonusText(at position: CGPoint, text: String) {
+        let label = SKLabelNode(text: text)
+        label.fontName = "AvenirNext-Bold"
+        label.fontSize = 32
+        label.fontColor = .yellow
+        label.position = position
+        label.zPosition = 20
+        addChild(label)
+        
+        let moveUp = SKAction.moveBy(x: 0, y: 50, duration: 2)
+        let fadeOut = SKAction.fadeOut(withDuration: 15)
+        label.run(SKAction.sequence([SKAction.group([moveUp, fadeOut]), SKAction.removeFromParent()]))
     }
 }
