@@ -28,6 +28,7 @@ struct GameView: View {
 //                        onHoleCompleted()
 //                    }
                 }
+            GameOverlayView(viewModel: GameOverlayViewModel(scene: scene, paidFeatureUnlocked: false))
 
             // Floating back button (game-like)
             VStack {

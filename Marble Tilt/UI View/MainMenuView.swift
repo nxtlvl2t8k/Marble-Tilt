@@ -12,25 +12,43 @@ struct MainMenuView: View {
     @State private var showInfo = false
     @State private var showEditor = false  // NEW: editor modal
     
+    // MARK: - Tutorial Check
+    @State private var tutorialCompleted =
+        UserDefaults.standard.bool(forKey: "TutorialCompleted")
+
     var body: some View {
         ZStack {
             if let level = showLevel {
-                if level == 1 {
+                // Tutorial Level (Level 0)
+                if level == 0 {
+                    GameView(level: 0,
+                             onExit: { closeLevel() },
+                             onHoleCompleted: {
+                                 UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+                                 tutorialCompleted = true
+                                 closeLevel()
+                             })
+                        .transition(.move(edge: .trailing))
+                        .zIndex(1)
+                }
+
+                else if level == 1 {
                     GameView(level: 1,
                              onExit: { withAnimation { showLevel = nil } },
                              onHoleCompleted: { withAnimation { showLevel = nil } })
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
+                    
                 } else if level == 2 {
                     GameContainerView(level: 2,
                                       onExit: { withAnimation { showLevel = nil } },
                                       onHoleCompleted: { withAnimation { showLevel = nil } })
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
-                } else if level == 0 {
-                    LevelSelectView(showLevel: $showLevel)
-                        .transition(.move(edge: .trailing))
-                        .zIndex(1)
+//                } else if level == 0 {
+//                    LevelSelectView(showLevel: $showLevel)
+//                        .transition(.move(edge: .trailing))
+//                        .zIndex(1)
                 }
             } else {
                 VStack(spacing: 20) {
@@ -38,6 +56,17 @@ struct MainMenuView: View {
                         .font(.largeTitle)
                         .bold()
                     
+                    // MARK: - Tutorial Button
+                     if !tutorialCompleted {
+                         Button("Start Tutorial") {
+                             showLevel = 0   // Level 0 is tutorial
+                         }
+                         .buttonStyle(MainMenuButtonStyle())
+                     } else {
+                         Button("Replay Tutorial") { showLevel = 0 }
+                             .buttonStyle(MainMenuButtonStyle())
+                     }
+
                     Button("Select Level") { showLevel = 0 }
                         .buttonStyle(MainMenuButtonStyle())
                     
@@ -72,6 +101,11 @@ struct MainMenuView: View {
                 Text("No background image found")
             }
         }
+    }
+    
+    // MARK: - Helpers
+    private func closeLevel() {
+        withAnimation { showLevel = nil }
     }
 }
 

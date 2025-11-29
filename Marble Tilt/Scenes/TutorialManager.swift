@@ -8,95 +8,164 @@
 import SpriteKit
 import Foundation
 
-enum TutorialStep {
-    case intro
-    case singleVortex
-    case multiVortex
-}
-
 class TutorialManager {
+
+    // MARK: - References
     weak var scene: GameScene?
-    var customVortexPositions: [CGPoint]?
-    
+
+    // Add this property
+    var customVortexPositions: [CGPoint]
+
+    // MARK: - State
     var active = false
-    var step: TutorialStep = .intro
+    var step: Step = .balanceCircle
     var maxMarbleSpeed: CGFloat = 400.0
+    var tutorialCompleted: (() -> Void)?
     var completion: (() -> Void)?
     
-    init(scene: GameScene, customVortexPositions: [CGPoint]? = nil, completion: @escaping () -> Void) {
+    // Tutorial nodes
+    private var tutorialCircle: SKShapeNode?
+    private var vortexNodes: [VortexNode] = []
+    
+    enum Step: Int {
+        case balanceCircle = 0
+        case smileVortex = 1
+        case complete = 2
+    }
+
+    // MARK: - Init
+    init(scene: GameScene, customVortexPositions: [CGPoint], completion: @escaping () -> Void) {
         self.scene = scene
         self.customVortexPositions = customVortexPositions
-        self.completion = completion
+        self.tutorialCompleted = completion
     }
-    
-    func startStep() {
+
+    // MARK: - Start Tutorial
+    func startTutorial() {
         active = true
-        setupVortexes()
-        showMessage("Tutorial started! Place the marble into the vortex slowly.")
+        step = .balanceCircle
+        startStep()
     }
-    
-    private func setupVortexes() {
+
+    // MARK: - Messaging
+    func showMessage(_ text: String) {
+        scene?.messageLabel?.text = text
+    }
+
+    // MARK: - Start Step Logic
+    func startStep() {
         guard let scene = scene else { return }
-        
-        // Remove old vortexes
-        scene.vortexNodes.forEach { $0.removeFromParent() }
-        scene.vortexNodes.removeAll()
-        
-        let positions = customVortexPositions ?? LevelLoader.loadVortexPositions(level: 1)
-        
-        for pos in positions {
-            let vortex = VortexNode(position: pos)
-            scene.vortexNodes.append(vortex)
-            scene.addChild(vortex)
+
+        switch step {
+
+        // STEP 1 — Balance into a circle
+        case .balanceCircle:
+            tutorialCircle = SKShapeNode(circleOfRadius: 100)
+            tutorialCircle?.position = CGPoint(x: scene.size.width/2,
+                                               y: scene.size.height/2)
+            tutorialCircle?.strokeColor = .green
+            tutorialCircle?.lineWidth = 6
+            tutorialCircle?.zPosition = 50
+            
+            if let circle = tutorialCircle {
+                scene.addChild(circle)
+            }
+            
+            showMessage("Tilt your iPad to guide the marble into the circle!")
+
+        // STEP 2 — Smile vortex formation
+        case .smileVortex:
+            tutorialCircle?.removeFromParent()
+            spawnSmileVortexes()
+            showMessage("Now guide the marble into all the vortexes!")
+
+        // STEP 3 — Finished!
+        case .complete:
+            active = false
+            showMessage("Tutorial Complete! 🎉")
+            tutorialCompleted?()
         }
     }
-    
-    func checkMarble(_ marble: MarbleNode, vortices: [VortexNode], sunkMarbles: inout [MarbleNode]) {
+
+    // MARK: - Spawn smile vortex formation
+    private func spawnSmileVortexes() {
+        guard let scene = scene else { return }
+
+        vortexNodes.forEach { $0.removeFromParent() }
+        vortexNodes.removeAll()
+
+        let center = CGPoint(x: scene.size.width/2, y: scene.size.height/2)
+
+        let eyeOffsetX: CGFloat = 120
+        let eyeOffsetY: CGFloat = 80
+        let mouthRadius: CGFloat = 100
+        let mouthAngles: [CGFloat] = [-.pi/4, -.pi/8, .pi/8, .pi/4]
+
+        // Eyes
+        let leftEye = VortexNode(position: CGPoint(x: center.x - eyeOffsetX,
+                                                   y: center.y + eyeOffsetY))
+        let rightEye = VortexNode(position: CGPoint(x: center.x + eyeOffsetX,
+                                                    y: center.y + eyeOffsetY))
+
+        vortexNodes.append(contentsOf: [leftEye, rightEye])
+
+        // Mouth
+        for angle in mouthAngles {
+            let x = center.x + cos(angle) * mouthRadius
+            let y = center.y - sin(angle) * mouthRadius - 50
+            vortexNodes.append(VortexNode(position: CGPoint(x: x, y: y)))
+        }
+
+        for v in vortexNodes {
+            scene.addChild(v)
+        }
+    }
+
+    // MARK: - Marble Checking
+    func checkMarble(_ marble: MarbleNode, sunkMarbles: inout [MarbleNode]) {
         guard active else { return }
-        
-        for vortex in vortices {
-            let distance = marble.position.distance(to: vortex.position)
-            let speed = marble.velocityMagnitude()
-            
-            if distance < 6 {
-                if speed > maxMarbleSpeed {
-                    marble.run(SKAction.sequence([
-                        SKAction.colorize(with: .red, colorBlendFactor: 1, duration: 0.1),
-                        SKAction.wait(forDuration: 0.2),
-                        SKAction.colorize(withColorBlendFactor: 0, duration: 0.1)
-                    ]))
-                    showMessage("Too fast! Slow down to enter the vortex.")
-                } else {
-                    marble.position = vortex.position
-                    marble.physicsBody?.isDynamic = false
-                    if !sunkMarbles.contains(marble) { sunkMarbles.append(marble) }
-                    advanceStepIfNeeded(vortexCount: vortices.count, sunkCount: sunkMarbles.count)
+
+        switch step {
+        case .balanceCircle:
+            if let circle = tutorialCircle {
+                let distance = marble.position.distance(to: circle.position)
+                if distance < 40 {    // in the circle
+                    advanceStep()
                 }
             }
+
+        case .smileVortex:
+            for vortex in vortexNodes {
+                let dist = marble.position.distance(to: vortex.position)
+                if dist < 6 {
+                    sinkMarble(marble, into: vortex, sunkMarbles: &sunkMarbles)
+                }
+            }
+
+            if sunkMarbles.count >= vortexNodes.count {
+                advanceStep()
+            }
+
+        case .complete:
+            break
         }
     }
-    
-    private func advanceStepIfNeeded(vortexCount: Int, sunkCount: Int) {
-        switch step {
-        case .intro:
-            step = .singleVortex
-            showMessage("Good! Try sinking the marble in the vortex again.")
-        case .singleVortex:
-            if sunkCount >= 1 {
-                step = .multiVortex
-                showMessage("Now try multiple vortexes!")
-            }
-        case .multiVortex:
-            if sunkCount >= vortexCount {
-                showMessage("Tutorial complete!")
-                completion?()
-                active = false
-            }
+
+    private func sinkMarble(_ marble: MarbleNode,
+                            into vortex: VortexNode,
+                            sunkMarbles: inout [MarbleNode]) {
+
+        marble.position = vortex.position
+        marble.physicsBody?.isDynamic = false
+
+        if !sunkMarbles.contains(marble) {
+            sunkMarbles.append(marble)
         }
     }
-    
-    func showMessage(_ message: String) {
-        // For now, print to console. Replace with UI overlay if needed.
-        print("💡 Tutorial: \(message)")
+
+    // MARK: - Step Progression
+    func advanceStep() {   // made public so GameScene can call it without errors
+        step = Step(rawValue: step.rawValue + 1) ?? .complete
+        startStep()
     }
 }
