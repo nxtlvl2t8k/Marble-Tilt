@@ -7,29 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F5E273792DB00FDB95B /* GameScene.sks */; };
 		D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F69273792DC00FDB95B /* Assets.xcassets */; };
 		D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293F2E40B72600C65E36 /* MarblesApp.swift */; };
-		D5A449662ED7671800447D9D /* Confetti.sks in Resources */ = {isa = PBXBuildFile; fileRef = D5A449652ED7671800447D9D /* Confetti.sks */; };
 		D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C052E447AE700A8991A /* GameViewController.swift */; };
-		D5F82A172E4DD822009AE1D7 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F82A132E4DD822009AE1D7 /* MainMenuView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D57C3F59273792DB00FDB95B /* Marble Tilt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Marble Tilt.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D57C3F5E273792DB00FDB95B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D57C3F69273792DC00FDB95B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Marble-Tilt-Info.plist"; sourceTree = SOURCE_ROOT; };
 		D5A3293F2E40B72600C65E36 /* MarblesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblesApp.swift; sourceTree = "<group>"; };
-		D5A449652ED7671800447D9D /* Confetti.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Confetti.sks; sourceTree = "<group>"; };
 		D5BF2C052E447AE700A8991A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		D5F82A132E4DD822009AE1D7 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D53C17AE2E4993AF00767564 /* Marble Handshake */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Marble Handshake"; sourceTree = "<group>"; };
-		D5C404C22E45711400EC6338 /* New Code */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "New Code"; sourceTree = "<group>"; };
-		D5F82AD72E4F0A35009AE1D7 /* M &M Wrappers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "M &M Wrappers"; sourceTree = "<group>"; };
+		D5A44D832EDA939B00447D9D /* UI View */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "UI View"; sourceTree = "<group>"; };
+		D5A44D852EDA957400447D9D /* Nodes */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Nodes; sourceTree = "<group>"; };
+		D5A44D8A2EDA95B200447D9D /* Scenes */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Scenes; sourceTree = "<group>"; };
+		D5A44D8D2EDA95D700447D9D /* Utilities */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Utilities; sourceTree = "<group>"; };
+		D5A44DA22EDAFB3300447D9D /* Editor */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Editor; sourceTree = "<group>"; };
+		D5A44DA32EDB021400447D9D /* Resourses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resourses; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,17 +60,25 @@
 			isa = PBXGroup;
 			children = (
 				D5A3293F2E40B72600C65E36 /* MarblesApp.swift */,
-				D53C17AE2E4993AF00767564 /* Marble Handshake */,
-				D5C404C22E45711400EC6338 /* New Code */,
-				D5BF2C052E447AE700A8991A /* GameViewController.swift */,
-				D5F82A132E4DD822009AE1D7 /* MainMenuView.swift */,
-				D5A449652ED7671800447D9D /* Confetti.sks */,
-				D5F82AD72E4F0A35009AE1D7 /* M &M Wrappers */,
-				D57C3F5E273792DB00FDB95B /* GameScene.sks */,
+				D5A44DA32EDB021400447D9D /* Resourses */,
+				D5A44DA22EDAFB3300447D9D /* Editor */,
+				D5A44D8D2EDA95D700447D9D /* Utilities */,
+				D5A44D8A2EDA95B200447D9D /* Scenes */,
+				D5A44D852EDA957400447D9D /* Nodes */,
+				D5A44D842EDA93CD00447D9D /* Models */,
+				D5A44D832EDA939B00447D9D /* UI View */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
 				D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */,
 			);
 			path = "Marble Tilt";
+			sourceTree = "<group>";
+		};
+		D5A44D842EDA93CD00447D9D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D5BF2C052E447AE700A8991A /* GameViewController.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -92,9 +97,12 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D53C17AE2E4993AF00767564 /* Marble Handshake */,
-				D5C404C22E45711400EC6338 /* New Code */,
-				D5F82AD72E4F0A35009AE1D7 /* M &M Wrappers */,
+				D5A44D832EDA939B00447D9D /* UI View */,
+				D5A44D852EDA957400447D9D /* Nodes */,
+				D5A44D8A2EDA95B200447D9D /* Scenes */,
+				D5A44D8D2EDA95D700447D9D /* Utilities */,
+				D5A44DA22EDAFB3300447D9D /* Editor */,
+				D5A44DA32EDB021400447D9D /* Resourses */,
 			);
 			name = "Marble Tilt";
 			productName = "Marble Tilt";
@@ -139,9 +147,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D57C3F5F273792DB00FDB95B /* GameScene.sks in Resources */,
 				D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */,
-				D5A449662ED7671800447D9D /* Confetti.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,7 +158,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5F82A172E4DD822009AE1D7 /* MainMenuView.swift in Sources */,
 				D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */,
 				D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */,
 			);

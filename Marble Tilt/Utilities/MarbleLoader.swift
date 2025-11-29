@@ -17,20 +17,19 @@ struct MarblePosition: Codable {
 }
 
 class MarbleLoader {
-    static func loadPositions() -> [CGPoint] {
-        guard let url = Bundle.main.url(forResource: "marble_positions_handshake_scaled_ipad", withExtension: "json") else {
-            print("❌ This is located in Class MarbleLoader JSON file not found in bundle")
+    static func loadPositions(file: String = "marble_positions_handshake_scaled_ipad") -> [CGPoint] {
+        guard let url = Bundle.main.url(forResource: file, withExtension: "json") else {
+            print("❌ JSON file not found in bundle")
             return []
         }
         
         do {
             let data = try Data(contentsOf: url)
             let decoded = try JSONDecoder().decode([MarblePosition].self, from: data)
-            return decoded.map { CGPoint(x: $0.x, y: $0.y) }
+            return decoded.map { $0.cgPoint }
         } catch {
             print("❌ JSON decode error: \(error)")
             return []
         }
     }
 }
-
