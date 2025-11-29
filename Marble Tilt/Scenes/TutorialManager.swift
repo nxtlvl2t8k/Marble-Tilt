@@ -6,117 +6,97 @@
 //
 
 import SpriteKit
+import Foundation
+
+enum TutorialStep {
+    case intro
+    case singleVortex
+    case multiVortex
+}
 
 class TutorialManager {
+    weak var scene: GameScene?
+    var customVortexPositions: [CGPoint]?
     
-    enum Step: Int {
-        case balanceCircle = 0
-        case singleVortex
-        case multiVortex
-        case complete
-    }
+    var active = false
+    var step: TutorialStep = .intro
+    var maxMarbleSpeed: CGFloat = 400.0
+    var completion: (() -> Void)?
     
-    var step: Step = .balanceCircle
-    var active: Bool = true
-    weak var scene: SKScene?
-    
-    var tutorialCircle: SKShapeNode?
-    var messageLabel: SKLabelNode?
-    
-    // Threshold for vortex capture
-    let maxMarbleSpeed: CGFloat = 60
-    
-    init(scene: SKScene) {
+    init(scene: GameScene, customVortexPositions: [CGPoint]? = nil, completion: @escaping () -> Void) {
         self.scene = scene
-        setupLabel()
+        self.customVortexPositions = customVortexPositions
+        self.completion = completion
     }
-    
-    private func setupLabel() {
-        guard let scene = scene else { return }
-        messageLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-        messageLabel?.fontSize = 28
-        messageLabel?.fontColor = .white
-        messageLabel?.position = CGPoint(x: scene.size.width/2, y: scene.size.height - 100)
-        messageLabel?.zPosition = 50
-        if let label = messageLabel { scene.addChild(label) }
-    }
-    
-    func showMessage(_ text: String) { messageLabel?.text = text }
     
     func startStep() {
+        active = true
+        setupVortexes()
+        showMessage("Tutorial started! Place the marble into the vortex slowly.")
+    }
+    
+    private func setupVortexes() {
         guard let scene = scene else { return }
-        switch step {
-        case .balanceCircle:
-            tutorialCircle = SKShapeNode(circleOfRadius: 100)
-            tutorialCircle?.position = CGPoint(x: scene.size.width/2, y: scene.size.height/2)
-            tutorialCircle?.strokeColor = .green
-            tutorialCircle?.lineWidth = 6
-            tutorialCircle?.zPosition = 10
-            if let circle = tutorialCircle { scene.addChild(circle) }
-            showMessage("Tilt your iPad to guide the marble into the circle!")
-            
-        case .singleVortex:
-            tutorialCircle?.removeFromParent()
-            showMessage("Tilt your iPad to move the marble into the vortex!")
-            
-        case .multiVortex:
-            showMessage("Tilt to reach all vortexes. Slow down to catch them!")
-            
-        case .complete:
-            active = false
-            showMessage("Tutorial Complete! 🎉")
+        
+        // Remove old vortexes
+        scene.vortexNodes.forEach { $0.removeFromParent() }
+        scene.vortexNodes.removeAll()
+        
+        let positions = customVortexPositions ?? LevelLoader.loadVortexPositions(level: 1)
+        
+        for pos in positions {
+            let vortex = VortexNode(position: pos)
+            scene.vortexNodes.append(vortex)
+            scene.addChild(vortex)
         }
     }
     
-    func advanceStep() {
-        step = Step(rawValue: step.rawValue + 1) ?? .complete
-        startStep()
-    }
-    
-    // Tutorial collision check
     func checkMarble(_ marble: MarbleNode, vortices: [VortexNode], sunkMarbles: inout [MarbleNode]) {
         guard active else { return }
         
-        switch step {
-        case .balanceCircle:
-            if let circle = tutorialCircle {
-                let distance = marble.position.distance(to: circle.position)
-                if distance < 100 {
-                    showMessage("Perfect! You balanced the marble!")
-                    advanceStep()
-                }
-            }
+        for vortex in vortices {
+            let distance = marble.position.distance(to: vortex.position)
+            let speed = marble.velocityMagnitude()
             
-        case .singleVortex, .multiVortex:
-            for vortex in vortices where vortex.parent != nil {
-                let distance = marble.position.distance(to: vortex.position)
-                let speed = marble.velocityMagnitude()
-                
-                if distance < 6 {
-                    if speed > maxMarbleSpeed {
-                        flashMarbleTooFast(marble)
-                    } else {
-                        marble.position = vortex.position
-                        marble.physicsBody?.isDynamic = false
-                        if !sunkMarbles.contains(marble) { sunkMarbles.append(marble) }
-                        
-                        // Advance tutorial if conditions met
-                        if step == .singleVortex || (step == .multiVortex && sunkMarbles.count == vortices.count) {
-                            advanceStep()
-                        }
-                    }
+            if distance < 6 {
+                if speed > maxMarbleSpeed {
+                    marble.run(SKAction.sequence([
+                        SKAction.colorize(with: .red, colorBlendFactor: 1, duration: 0.1),
+                        SKAction.wait(forDuration: 0.2),
+                        SKAction.colorize(withColorBlendFactor: 0, duration: 0.1)
+                    ]))
+                    showMessage("Too fast! Slow down to enter the vortex.")
+                } else {
+                    marble.position = vortex.position
+                    marble.physicsBody?.isDynamic = false
+                    if !sunkMarbles.contains(marble) { sunkMarbles.append(marble) }
+                    advanceStepIfNeeded(vortexCount: vortices.count, sunkCount: sunkMarbles.count)
                 }
             }
-        default: break
         }
     }
     
-    private func flashMarbleTooFast(_ marble: MarbleNode) {
-        marble.run(SKAction.sequence([
-            SKAction.colorize(with: .red, colorBlendFactor: 1, duration: 0.1),
-            SKAction.wait(forDuration: 0.2),
-            SKAction.colorize(withColorBlendFactor: 0, duration: 0.1)
-        ]))
-        showMessage("Too fast! Slow down to enter the vortex.")
+    private func advanceStepIfNeeded(vortexCount: Int, sunkCount: Int) {
+        switch step {
+        case .intro:
+            step = .singleVortex
+            showMessage("Good! Try sinking the marble in the vortex again.")
+        case .singleVortex:
+            if sunkCount >= 1 {
+                step = .multiVortex
+                showMessage("Now try multiple vortexes!")
+            }
+        case .multiVortex:
+            if sunkCount >= vortexCount {
+                showMessage("Tutorial complete!")
+                completion?()
+                active = false
+            }
+        }
+    }
+    
+    func showMessage(_ message: String) {
+        // For now, print to console. Replace with UI overlay if needed.
+        print("💡 Tutorial: \(message)")
     }
 }
