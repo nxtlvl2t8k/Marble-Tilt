@@ -10,65 +10,68 @@ struct MainMenuView: View {
     @State private var showLevel: Int? = nil
     @State private var showHelp = false
     @State private var showInfo = false
-    @State private var showEditor = false  // NEW: editor modal
+    @State private var showEditor = false
+    @State private var showLevelSelect = false  // NEW: level select page
     
-    // MARK: - Tutorial Check
     @State private var tutorialCompleted =
         UserDefaults.standard.bool(forKey: "TutorialCompleted")
 
     var body: some View {
         ZStack {
             if let level = showLevel {
-                // Tutorial Level (Level 0)
+                // MARK: - Levels
                 if level == 0 {
+                    // Tutorial Level
                     GameView(level: 0,
                              onExit: { closeLevel() },
                              onHoleCompleted: {
                                  UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                                 tutorialCompleted = true
-                                 closeLevel()
+                        // Unlock Marbles level (id=1)
+                        updateMaxLevel(level: 0)
+
+                        // Close tutorial and return to LevelSelectView
+                        withAnimation {
+                            showLevel = nil
+                            showLevelSelect = true
+                        }
+                    })
+                    .transition(.move(edge: .trailing))
+                    .zIndex(1)
+                } else if level == 1 {
+                    GameView(level: 1,
+                             onExit: { withAnimation { showLevel = nil } },
+                             onHoleCompleted: {
+                                 updateMaxLevel(level: 1)
+                                 withAnimation { showLevel = nil }
                              })
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
-                }
-
-                else if level == 1 {
-                    GameView(level: 1,
-                             onExit: { withAnimation { showLevel = nil } },
-                             onHoleCompleted: { withAnimation { showLevel = nil } })
-                        .transition(.move(edge: .trailing))
-                        .zIndex(1)
-                    
                 } else if level == 2 {
                     GameContainerView(level: 2,
                                       onExit: { withAnimation { showLevel = nil } },
-                                      onHoleCompleted: { withAnimation { showLevel = nil } })
+                                      onHoleCompleted: {
+                                          updateMaxLevel(level: 2)
+                                          withAnimation { showLevel = nil }
+                                      })
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
-//                } else if level == 0 {
-//                    LevelSelectView(showLevel: $showLevel)
-//                        .transition(.move(edge: .trailing))
-//                        .zIndex(1)
                 }
+            } else if showLevelSelect {
+                // MARK: - Level Select View
+                LevelSelectView(showLevel: $showLevel, showLevelSelect: $showLevelSelect)
+                    .transition(.move(edge: .trailing))
+                    .zIndex(1)
             } else {
+                // MARK: - Main Menu
                 VStack(spacing: 20) {
-                    Text("Multi-Level Game")
+                    Text("Welcome to Marble Tilt")
                         .font(.largeTitle)
                         .bold()
                     
-                    // MARK: - Tutorial Button
-                     if !tutorialCompleted {
-                         Button("Start Tutorial") {
-                             showLevel = 0   // Level 0 is tutorial
-                         }
-                         .buttonStyle(MainMenuButtonStyle())
-                     } else {
-                         Button("Replay Tutorial") { showLevel = 0 }
-                             .buttonStyle(MainMenuButtonStyle())
-                     }
-
-                    Button("Select Level") { showLevel = 0 }
-                        .buttonStyle(MainMenuButtonStyle())
+                    Button("Select Level") {
+                        withAnimation { showLevelSelect = true }
+                    }
+                    .buttonStyle(MainMenuButtonStyle())
                     
                     Button("Help") { showHelp = true }
                         .buttonStyle(MainMenuButtonStyle())
@@ -76,12 +79,11 @@ struct MainMenuView: View {
                     Button("About Us") { showInfo = true }
                         .buttonStyle(MainMenuButtonStyle())
                     
-                    // NEW: Editor button (could be paid feature)
+                    // Editor button (optional feature)
                     Button("Edit Level Layout") {
                         if UserDefaults.standard.bool(forKey: "hasPurchasedEditor") {
                             showEditor = true
                         } else {
-                            // Show purchase flow
                             print("Prompt user to buy editor feature")
                         }
                     }
@@ -94,7 +96,6 @@ struct MainMenuView: View {
         .sheet(isPresented: $showHelp) { HelpView() }
         .sheet(isPresented: $showInfo) { AboutUsView() }
         .sheet(isPresented: $showEditor) {
-            // Supply your background image here
             if let bgImage = UIImage(named: "handshake") {
                 VortexEditorView(background: bgImage)
             } else {
@@ -106,6 +107,13 @@ struct MainMenuView: View {
     // MARK: - Helpers
     private func closeLevel() {
         withAnimation { showLevel = nil }
+    }
+    
+    private func updateMaxLevel(level: Int) {
+        let currentMax = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
+        if level > currentMax {
+            UserDefaults.standard.set(level, forKey: "MaxLevelCompleted")
+        }
     }
 }
 
