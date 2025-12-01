@@ -12,7 +12,7 @@ class MarbleNode: SKSpriteNode {
     
     var originalTexture: SKTexture?
     
-    init(textureName: String = "ballColorSoccer", size: CGSize = CGSize(width: 24, height: 24)) {
+    init(textureName: String = "ballGold", size: CGSize = CGSize(width: 24, height: 24)) {
         let texture = SKTexture(imageNamed: textureName)
         super.init(texture: texture, color: .clear, size: size)
         self.name = "marble"

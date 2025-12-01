@@ -11,7 +11,8 @@ struct LevelSelectView: View {
     @Binding var showLevelSelect: Bool  // For back button
     
     @State private var tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
-    
+    @State private var showEditor = false
+
     let levels = [
         (id: 0, name: "Tutorial"),
         (id: 1, name: "Marbles"),
@@ -35,15 +36,67 @@ struct LevelSelectView: View {
                 .padding()
             }
             
-            Button("Back") {
+            SwiftUI.Button("Back") {
+                if UserDefaults.standard.bool(forKey: "hasPurchasedEditor") {
+                    showEditor = true
+                } else {
+                    print("Prompt user to buy editor feature")
+                }
+            }
+            .buttonStyle(MainMenuButtonStyle())
+            .padding(.bottom, 10)
+            
+            SwiftUI.Button("Back") {
                 withAnimation { showLevelSelect = false }
             }
             .buttonStyle(MainMenuButtonStyle())
             .padding()
         }
+        .sheet(isPresented: $showEditor) {
+            if let bgImage = UIImage(named: "handshake") {
+                VortexEditorView(background: bgImage)
+            } else {
+                Text("No background image found")
+            }
+        }
         .navigationTitle("Select Level")
         .onAppear {
             tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
+        }
+
+        // MARK: - Level loading sheet
+        .sheet(item: $showLevel) { level in
+            GameView(
+                level: level,
+                onExit: {
+                    showLevel = nil
+                    showLevelSelect = true
+                },
+                onHoleCompleted: {
+                    handleLevelCompletion(level: level)
+                }
+            )
+        }
+    }
+
+    // MARK: - Unlock Logic
+    private func handleLevelCompletion(level: Int) {
+        // Tutorial special handling
+        if level == 0 {
+            UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+            UserDefaults.standard.set(1, forKey: "MaxLevelCompleted")
+        }
+
+        // Unlock next level
+        let currentMax = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
+        if level >= currentMax {
+            UserDefaults.standard.set(level + 1, forKey: "MaxLevelCompleted")
+        }
+
+        // Close level and return to LevelSelect
+        withAnimation {
+            showLevel = nil
+            showLevelSelect = true
         }
     }
     
@@ -51,15 +104,16 @@ struct LevelSelectView: View {
     private func isUnlocked(level: Int) -> Bool {
         switch level {
         case 0:
-            return true // Tutorial always unlocked
+            return true
         case 1:
             return UserDefaults.standard.bool(forKey: "TutorialCompleted") // Marbles unlocked after tutorial
         default:
             let maxCompleted = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
-            return level <= maxCompleted + 1 // sequential unlock for other levels
+            return level <= maxCompleted // sequential unlock for other levels
         }
     }
 }
+
 
 struct LevelButton: View {
     var levelName: String
@@ -86,4 +140,8 @@ struct LevelButton: View {
         }
         .disabled(!unlocked)
     }
+}
+
+extension Int: @retroactive Identifiable {
+    public var id: Int { self }
 }
