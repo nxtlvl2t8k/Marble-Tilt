@@ -10,8 +10,7 @@ struct LevelSelectView: View {
     @Binding var showLevel: Int?
     @Binding var showLevelSelect: Bool  // For back button
     
-    @State private var tutorialCompleted =
-    UserDefaults.standard.bool(forKey: "TutorialCompleted")
+    @State private var tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
     
     let levels = [
         (id: 0, name: "Tutorial"),
@@ -48,15 +47,17 @@ struct LevelSelectView: View {
         }
     }
     
+    // MARK: - Unlock Logic
     private func isUnlocked(level: Int) -> Bool {
-        if level == 0 { return true } // Tutorial always unlocked
-        // Marbles level (id=1) unlocked only after tutorial
-        if level == 1 {
-            return UserDefaults.standard.bool(forKey: "TutorialCompleted")
+        switch level {
+        case 0:
+            return true // Tutorial always unlocked
+        case 1:
+            return UserDefaults.standard.bool(forKey: "TutorialCompleted") // Marbles unlocked after tutorial
+        default:
+            let maxCompleted = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
+            return level <= maxCompleted + 1 // sequential unlock for other levels
         }
-        // Other levels unlocked sequentially
-        let maxCompleted = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
-        return level <= maxCompleted + 1
     }
 }
 

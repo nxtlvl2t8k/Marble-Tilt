@@ -8,20 +8,48 @@
 import Foundation
 import CoreGraphics
 
+struct MarblePosition: Codable {
+    let x: CGFloat
+    let y: CGFloat
+    var cgPoint: CGPoint { CGPoint(x: x, y: y) }
+}
+
+struct VortexPosition: Codable {
+    let x: CGFloat
+    let y: CGFloat
+    var cgPoint: CGPoint { CGPoint(x: x, y: y) }
+}
+
+// MARK: - Loader
 class LevelLoader {
-    static func loadVortexPositions(level: Int) -> [CGPoint] {
-        guard let url = Bundle.main.url(forResource: "level\(level)", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let array = try? JSONSerialization.jsonObject(with: data) as? [[String: CGFloat]]
-        else { return [] }
-        
-        return array.compactMap { dict in
-            guard let x = dict["x"], let y = dict["y"] else { return nil }
-            return CGPoint(x: x, y: y)
+
+    static func loadMarbles(file: String) -> [CGPoint] {
+        guard let url = Bundle.main.url(forResource: file, withExtension: "json") else {
+            print("❌ Marble JSON not found: \(file).json")
+            return []
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            let decoded = try JSONDecoder().decode([MarblePosition].self, from: data)
+            return decoded.map { $0.cgPoint }
+        } catch {
+            print("❌ Marble JSON decode error: \(error)")
+            return []
         }
     }
-    
-    static func loadMarblePositions(file: String) -> [CGPoint] {
-        return MarbleLoader.loadPositions(file: file)
+
+    static func loadVortexes(file: String) -> [CGPoint] {
+        guard let url = Bundle.main.url(forResource: file, withExtension: "json") else {
+            print("❌ Vortex JSON not found: \(file).json")
+            return []
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            let decoded = try JSONDecoder().decode([VortexPosition].self, from: data)
+            return decoded.map { $0.cgPoint }
+        } catch {
+            print("❌ Vortex JSON decode error: \(error)")
+            return []
+        }
     }
 }

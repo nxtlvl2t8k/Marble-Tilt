@@ -20,7 +20,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var tutorialManager: TutorialManager?
 
     // MARK: - Tutorial Flags
-    var tutorialMarble: MarbleNode?
     var isTutorialLevel = false
     
     // MARK: - Editing Mode
@@ -40,8 +39,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         setupMessageLabel()
         startTiltUpdates()
-        
-        startTutorial()   // Auto-enter tutorial for now
     }
 
     
@@ -58,81 +55,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         messageLabel = label
     }
 
-
     // ============================================================
-    // MARK: - Tutorial Flow
+    // MARK: - Marble/ Vortex Spawning
     // ============================================================
-    func startTutorial() {
-        isTutorialLevel = true
-        
-        // Clear previous content
-        sunkMarbles.removeAll()
-        vortexNodes.forEach { $0.removeFromParent() }
-        vortexNodes.removeAll()
+    func spawnMarbles(from positions: [CGPoint]) {
         marbles.forEach { $0.removeFromParent() }
         marbles.removeAll()
 
-        tutorialManager = TutorialManager(scene: self,
-                                          customVortexPositions: []) { [weak self] in
-            self?.tutorialCompleted()
-        }
-        
-        tutorialManager?.startTutorial()
-
-        // Spawn tutorial marble
-        let marble = MarbleNode()
-        marble.position = CGPoint(x: size.width * 0.25, y: size.height / 2)
-        addChild(marble)
-        tutorialMarble = marble
-    }
-
-    func tutorialCompleted() {
-        print("🎉 Tutorial completed")
-        UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-
-        tutorialMarble?.removeFromParent()
-        tutorialMarble = nil
-        isTutorialLevel = false
-
-        setupVortexes()
-        spawnMarbles(count: 5)
-
-        messageLabel?.text = "Tutorial Complete!"
-    }
-
-
-    // ============================================================
-    // MARK: - Normal Gameplay Setup
-    // ============================================================
-    func spawnMarbles(count: Int) {
-        for _ in 0..<count {
+        for pos in positions {
             let marble = MarbleNode()
-            marble.position = CGPoint(
-                x: CGFloat.random(in: 0...size.width),
-                y: CGFloat.random(in: 0...size.height)
-            )
-            marbles.append(marble)
+            marble.position = pos
             addChild(marble)
+            marbles.append(marble)
         }
     }
 
-    func setupVortexes() {
-        let positions = LevelLoader.loadVortexPositions(level: 1)
+    func spawnRandomMarbles(count: Int) {
+        let positions = (0..<count).map { _ in
+            CGPoint(x: CGFloat.random(in: 0...size.width),
+                    y: CGFloat.random(in: 0...size.height))
+        }
+        spawnMarbles(from: positions)
+    }
+
+    func setupVortexes(positions: [CGPoint]) {
+        vortexNodes.forEach { $0.removeFromParent() }
+        vortexNodes.removeAll()
+
         for pos in positions {
             let vortex = VortexNode(position: pos)
-            vortexNodes.append(vortex)
             addChild(vortex)
+            vortexNodes.append(vortex)
         }
     }
 
-
-    // ============================================================
     // MARK: - Tilt Physics
-    // ============================================================
     func startTiltUpdates() {
         guard motionManager.isDeviceMotionAvailable else { return }
         motionManager.deviceMotionUpdateInterval = 1/60
-        
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
             guard let self = self, let motion = motion else { return }
             let tiltX = motion.gravity.y
@@ -141,6 +101,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
 
+    // MARK: - Update Loop
+    override func update(_ currentTime: TimeInterval) {
+        if editingMode { return }
+        
+        if let tutorial = tutorialManager {
+            for marble in marbles where marble.physicsBody?.isDynamic == true {
+                tutorial.checkMarble(marble, sunkMarbles: &sunkMarbles)
+            }
+        }
+    }
+
+    // ============================================================
+    // MARK: - Tutorial Flow
+    // ============================================================
+    func startTutorial(marblePositions: [CGPoint], vortexPositions: [CGPoint], completion: @escaping () -> Void) {
+        isTutorialLevel = true
+        sunkMarbles.removeAll()
+        vortexNodes.forEach { $0.removeFromParent() }
+        vortexNodes.removeAll()
+        marbles.forEach { $0.removeFromParent() }
+        marbles.removeAll()
+
+        tutorialManager = TutorialManager(scene: self,
+                                          marblePositions: marblePositions,
+                                          vortexPositions: vortexPositions) {
+            completion()
+            self.isTutorialLevel = false
+        }
+
+        tutorialManager?.startTutorial()
+    }
 
     // ============================================================
     // MARK: - Editing Mode
@@ -168,24 +159,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         selectedVortex = nil
     }
-
-
-    // ============================================================
-    // MARK: - Frame Updates
-    // ============================================================
-    override func update(_ currentTime: TimeInterval) {
-        if editingMode { return }
-
-        if isTutorialLevel, let marble = tutorialMarble {
-            tutorialManager?.checkMarble(marble, sunkMarbles: &sunkMarbles)
-        }
-
-        // Normal marble handling
-        for marble in marbles where marble.physicsBody?.isDynamic == true {
-            tutorialManager?.checkMarble(marble, sunkMarbles: &sunkMarbles)
-        }
-    }
-
 
     // ============================================================
     // MARK: - Editing Controls

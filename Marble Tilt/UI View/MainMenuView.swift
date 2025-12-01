@@ -14,53 +14,25 @@ struct MainMenuView: View {
     @State private var showLevelSelect = false  // NEW: level select page
     
     @State private var tutorialCompleted =
-        UserDefaults.standard.bool(forKey: "TutorialCompleted")
-
+    UserDefaults.standard.bool(forKey: "TutorialCompleted")
+    
     var body: some View {
         ZStack {
             if let level = showLevel {
                 // MARK: - Levels
-                if level == 0 {
-                    // Tutorial Level
-                    GameView(level: 0,
-                             onExit: { closeLevel() },
-                             onHoleCompleted: {
-                                 UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-                        // Unlock Marbles level (id=1)
-                        updateMaxLevel(level: 0)
-
-                        // Close tutorial and return to LevelSelectView
-                        withAnimation {
-                            showLevel = nil
-                            showLevelSelect = true
-                        }
-                    })
-                    .transition(.move(edge: .trailing))
-                    .zIndex(1)
-                } else if level == 1 {
-                    GameView(level: 1,
-                             onExit: { withAnimation { showLevel = nil } },
-                             onHoleCompleted: {
-                                 updateMaxLevel(level: 1)
-                                 withAnimation { showLevel = nil }
-                             })
-                        .transition(.move(edge: .trailing))
-                        .zIndex(1)
-                } else if level == 2 {
-                    GameContainerView(level: 2,
-                                      onExit: { withAnimation { showLevel = nil } },
-                                      onHoleCompleted: {
-                                          updateMaxLevel(level: 2)
-                                          withAnimation { showLevel = nil }
-                                      })
-                        .transition(.move(edge: .trailing))
-                        .zIndex(1)
-                }
+                GameView(level: 0,
+                         onExit: { closeLevel() },
+                         onHoleCompleted: {
+                    handleLevelCompletion(level: level) })
+                .transition(.move(edge: .trailing))
+                .zIndex(1)
+                
             } else if showLevelSelect {
                 // MARK: - Level Select View
                 LevelSelectView(showLevel: $showLevel, showLevelSelect: $showLevelSelect)
                     .transition(.move(edge: .trailing))
                     .zIndex(1)
+                
             } else {
                 // MARK: - Main Menu
                 VStack(spacing: 20) {
@@ -104,16 +76,36 @@ struct MainMenuView: View {
         }
     }
     
-    // MARK: - Helpers
-    private func closeLevel() {
-        withAnimation { showLevel = nil }
-    }
-    
-    private func updateMaxLevel(level: Int) {
+    // MARK: - Level Completion
+    private func handleLevelCompletion(level: Int) {
+        // Unlock next level
         let currentMax = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
         if level > currentMax {
             UserDefaults.standard.set(level, forKey: "MaxLevelCompleted")
         }
+        
+        // Tutorial special handling: always mark completed
+        if level == 0 {
+            UserDefaults.standard.set(true, forKey: "TutorialCompleted")
+        }
+        
+        // Close level and show level select
+        withAnimation {
+            showLevel = nil
+            showLevelSelect = true
+        }
+    }
+    
+    // MARK: - Helpers
+    private func closeLevel() {
+        withAnimation { showLevel = nil }
+    }
+}
+    
+private func updateMaxLevel(level: Int) {
+    let currentMax = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
+    if level > currentMax {
+        UserDefaults.standard.set(level, forKey: "MaxLevelCompleted")
     }
 }
 

@@ -13,14 +13,17 @@ class TutorialManager {
     // MARK: - References
     weak var scene: GameScene?
 
-    // Add this property
-    var customVortexPositions: [CGPoint]
+    var marblePositions: [CGPoint]
+    var vortexPositions: [CGPoint]
+
+//    // Add this property
+//    var customVortexPositions: [CGPoint]
 
     // MARK: - State
     var active = false
     var step: Step = .balanceCircle
-    var maxMarbleSpeed: CGFloat = 400.0
-    var tutorialCompleted: (() -> Void)?
+//    var maxMarbleSpeed: CGFloat = 400.0
+//    var tutorialCompleted: (() -> Void)?
     var completion: (() -> Void)?
     
     // Tutorial nodes
@@ -34,22 +37,26 @@ class TutorialManager {
     }
 
     // MARK: - Init
-    init(scene: GameScene, customVortexPositions: [CGPoint], completion: @escaping () -> Void) {
+    init(scene: GameScene,
+         marblePositions: [CGPoint],
+         vortexPositions: [CGPoint],
+         completion: @escaping () -> Void) {
         self.scene = scene
-        self.customVortexPositions = customVortexPositions
-        self.tutorialCompleted = completion
+        self.marblePositions = marblePositions
+        self.vortexPositions = vortexPositions
+        self.completion = completion
     }
 
     // MARK: - Start Tutorial
     func startTutorial() {
-        active = true
-        step = .balanceCircle
-        startStep()
-    }
+        guard let scene = scene else { return }
 
-    // MARK: - Messaging
-    func showMessage(_ text: String) {
-        scene?.messageLabel?.text = text
+        active = true
+        scene.spawnMarbles(from: marblePositions)
+        scene.setupVortexes(positions: vortexPositions)
+        scene.messageLabel?.text = "Tutorial: Guide the marble!"
+        
+        startStep()
     }
 
     // MARK: - Start Step Logic
@@ -70,7 +77,6 @@ class TutorialManager {
             if let circle = tutorialCircle {
                 scene.addChild(circle)
             }
-            
             showMessage("Tilt your iPad to guide the marble into the circle!")
 
         // STEP 2 — Smile vortex formation
@@ -83,7 +89,7 @@ class TutorialManager {
         case .complete:
             active = false
             showMessage("Tutorial Complete! 🎉")
-            tutorialCompleted?()
+            completion?()
         }
     }
 
@@ -164,8 +170,13 @@ class TutorialManager {
     }
 
     // MARK: - Step Progression
-    func advanceStep() {   // made public so GameScene can call it without errors
+    private func advanceStep() {
         step = Step(rawValue: step.rawValue + 1) ?? .complete
         startStep()
     }
+    
+    private func showMessage(_ text: String) {
+        scene?.messageLabel?.text = text
+    }
 }
+
