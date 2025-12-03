@@ -18,9 +18,17 @@ struct GameView: View {
 
     var body: some View {
         ZStack {
-            SpriteView(scene: scene)
-                .ignoresSafeArea()
-
+            SpriteView(scene: {
+                let scene = GameScene(size: CGSize(width: 1024, height: 768))
+                scene.tutorialMode = true
+                scene.onTutorialStageCompleted = {
+                    print("Tutorial Finished!")
+                    // Call GameView completion or show next level
+                }
+                return scene
+            }())
+            .ignoresSafeArea()
+            
             VStack {
                 HStack {
                     Button(action: { onExit() }) {
