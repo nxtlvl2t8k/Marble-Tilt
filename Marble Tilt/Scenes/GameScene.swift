@@ -50,11 +50,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         motionManager.startAccelerometerUpdates()
         
         // Background
-        let bgName = tutorialMode ? "handshake" : "handshake" // Use real background image
-        let background = SKSpriteNode(imageNamed: bgName)
+        let background = SKSpriteNode(color: .black, size: size) // solid black background
         background.position = CGPoint(x: size.width/2, y: size.height/2)
         background.zPosition = -1
-        background.size = size
         addChild(background)
         
         if tutorialMode {
@@ -91,6 +89,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         marble.physicsBody?.contactTestBitMask = 1 << 1
         addChild(marble)
         tutorialMarble = marble
+        
+        // Pulse animation
+        let pulseUp = SKAction.scale(to: 1.1, duration: 0.6)
+        let pulseDown = SKAction.scale(to: 1.0, duration: 0.6)
+        circle.run(SKAction.repeatForever(SKAction.sequence([pulseUp, pulseDown])))
+
+        // Vortex
+        let vortex = SKSpriteNode(imageNamed: "vortex")
+        vortex.position = circle.position
+        vortex.setScale(0.4)
+        vortex.zPosition = 1
+        addChild(vortex)
+        vortexNodes.append(vortex)
+
+        // Rotate animation
+        let rotate = SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 2)
+        vortex.run(SKAction.repeatForever(rotate))
     }
     
     func showNextTutorialStage() {
@@ -180,74 +195,90 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let tiltY = data.acceleration.x
             physicsWorld.gravity = CGVector(dx: tiltX * -50, dy: tiltY * 50)
         }
-        
-        // Tutorial stage checks
+
+        // Tutorial checks
         guard tutorialMode, let marble = tutorialMarble else { return }
-        
-        if tutorialMode, let marble = tutorialMarble {
-            switch tutorialStage {
-            case .tiltCircle:
-                guard let circle = tutorialCircle else { break }
-                
-                let dx = marble.position.x - circle.position.x
-                let dy = marble.position.y - circle.position.y
-                let distance = hypot(dx, dy)
-                
-                let velocityX = marble.physicsBody?.velocity.dx ?? 0
-                let velocityY = marble.physicsBody?.velocity.dy ?? 0
-                let speed = sqrt(velocityX * velocityX + velocityY * velocityY)
-                
-                if distance < circle.frame.width / 2 && speed < 50 {
-                    if circle.strokeColor != .green && circle.strokeColor != .yellow {
-                        circle.strokeColor = .yellow // first feedback
-                        
-                        let waitAction = SKAction.wait(forDuration: 1.5)
-                        let checkAction = SKAction.run { [weak self] in
-                            guard let self = self else { return }
-                            
-                            let newDx = marble.position.x - circle.position.x
-                            let newDy = marble.position.y - circle.position.y
-                            let newDistance = hypot(newDx, newDy)
-                            
-                            let newVelocityX = marble.physicsBody?.velocity.dx ?? 0
-                            let newVelocityY = marble.physicsBody?.velocity.dy ?? 0
-                            let newSpeed = sqrt(newVelocityX * newVelocityX + newVelocityY * newVelocityY)
-                            
-                            if newDistance < circle.frame.width / 2 && newSpeed < 50 {
-                                circle.strokeColor = .green
-                                self.tutorialStage = .smileyFace
-                                self.showNextTutorialStage()
-                            } else {
-                                circle.strokeColor = .red
-                            }
-                        }
-                        
-                        run(SKAction.sequence([waitAction, checkAction]))
-                    }
-                }
-                
-            case .smileyFace:
-                for vortex in vortexNodes {
-                    let dx = vortex.position.x - marble.position.x
-                    let dy = vortex.position.y - marble.position.y
-                    let distance = sqrt(dx*dx + dy*dy)
-                    
-                    let velocityX = marble.physicsBody?.velocity.dx ?? 0
-                    let velocityY = marble.physicsBody?.velocity.dy ?? 0
-                    let speed = sqrt(velocityX * velocityX + velocityY * velocityY)
-                    
-                    if distance < 6 && speed < 60 {
-                        marble.physicsBody?.isDynamic = false
-                        showNextStageButton()
-                        tutorialStage = .completed
-                    }
-                }
-                
-            default: break
+
+        switch tutorialStage {
+        case .tiltCircle:
+            handleCircleStage(marble: marble)
+        case .smileyFace:
+            handleSmileyStage(marble: marble)
+        default: break
+        }
+    }
+
+    // MARK: - Circle Stage
+    private func handleCircleStage(marble: SKSpriteNode) {
+        guard let circle = tutorialCircle else { return }
+        let maxAllowedSpeed: CGFloat = 50
+
+        // Distance & speed
+        let dx = marble.position.x - circle.position.x
+        let dy = marble.position.y - circle.position.y
+        let distance = hypot(dx, dy)
+        let velocity = marble.physicsBody?.velocity ?? .zero
+        let speed = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
+
+        // Circle feedback
+        if distance > circle.frame.width / 2 {
+            circle.strokeColor = .red   // too far
+        } else if speed > maxAllowedSpeed {
+            circle.strokeColor = .yellow  // inside but moving too fast
+        } else {
+            circle.strokeColor = .green   // inside and slow enough
+        }
+
+        // Check for lock-in via vortex
+        for vortex in vortexNodes {
+            let dxV = vortex.position.x - marble.position.x
+            let dyV = vortex.position.y - marble.position.y
+            let distV = hypot(dxV, dyV)
+
+            if distV < 12 && speed <= maxAllowedSpeed {
+                // Lock marble
+                marble.physicsBody?.isDynamic = false
+                marble.position = vortex.position
+                circle.strokeColor = .green
+
+                // Proceed to next stage
+                tutorialStage = .smileyFace
+                showNextTutorialStage()
+                showNextStageButton()
             }
         }
     }
-    
+
+    // MARK: - Smiley Stage
+    private func handleSmileyStage(marble: SKSpriteNode) {
+        let maxAllowedSpeed: CGFloat = 50
+
+        for vortex in vortexNodes {
+            let dx = vortex.position.x - marble.position.x
+            let dy = vortex.position.y - marble.position.y
+            let distance = hypot(dx, dy)
+            let velocity = marble.physicsBody?.velocity ?? .zero
+            let speed = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
+
+            // Optional: marble wiggle if too fast
+            if distance < 20 && speed > maxAllowedSpeed {
+                marble.run(SKAction.sequence([
+                    SKAction.moveBy(x: CGFloat.random(in: -5...5),
+                                    y: CGFloat.random(in: -5...5),
+                                    duration: 0.1)
+                ]))
+            }
+
+            // Lock-in if centered and slow
+            if distance < 12 && speed <= maxAllowedSpeed {
+                marble.physicsBody?.isDynamic = false
+                marble.position = vortex.position
+
+                tutorialStage = .completed
+                showNextStageButton()
+            }
+        }
+    }
     // MARK: - Touches
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
