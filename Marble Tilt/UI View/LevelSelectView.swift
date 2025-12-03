@@ -7,141 +7,82 @@
 import SwiftUI
 
 struct LevelSelectView: View {
-    @Binding var showLevel: Int?
-    @Binding var showLevelSelect: Bool  // For back button
+    @Environment(\.dismiss) var dismiss
     
-    @State private var tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
-    @State private var showEditor = false
+//    @Binding var showLevel: Int?
+//    @Binding var showLevelSelect: Bool  // For back button
+    
+    @State private var showGame = false
+    @State private var levelToLoad: Int? = nil
+//    @State private var tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
+//    @State private var showEditor = false
+    @State private var completedLevels: Set<Int> = [0] // tutorial unlocked
 
+    // Only 3 levels: tutorial, main marbles, golf (locked)
     let levels = [
-        (id: 0, name: "Tutorial"),
-        (id: 1, name: "Marbles"),
-        (id: 2, name: "Golf")
+        (id: 0, name: "Tutorial", unlocked: true),
+        (id: 1, name: "Main Marbles", unlocked: UserDefaults.standard.bool(forKey: "TutorialCompleted")),
+        (id: 2, name: "Golf", unlocked: false)
     ]
-    
+
     var body: some View {
-        VStack {
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 20)], spacing: 20) {
-                    ForEach(levels, id: \.id) { level in
-                        LevelButton(levelName: level.name,
-                                    unlocked: isUnlocked(level: level.id)) {
-                            withAnimation {
-                                showLevel = level.id
-                                showLevelSelect = false
-                            }
+        ZStack {
+            Color.black.edgesIgnoringSafeArea(.all)
+//            Image("levelBackground")
+//                .resizable()
+//                .scaledToFill()
+//                .ignoresSafeArea()
+            VStack(spacing: 20) {
+                Text("Select Level")
+                    .font(.largeTitle)
+                    .bold()
+                    .padding(.top, 20)
+
+                ForEach(0..<5) { level in
+                    Button(action: {
+                        if completedLevels.contains(level) {
+                            levelToLoad = level
+                            showGame = true
                         }
+                    }) {
+                        HStack {
+                            Text(level == 0 ? "Tutorial" : "Level \(level)")
+                                .foregroundColor(.white)
+                                .font(.title3)
+                            Spacer()
+                            Image(systemName: completedLevels.contains(level)
+                                  ? "lock.open"
+                                  : "lock")
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
                     }
                 }
-                .padding()
-            }
-            
-            SwiftUI.Button("Back") {
-                if UserDefaults.standard.bool(forKey: "hasPurchasedEditor") {
-                    showEditor = true
-                } else {
-                    print("Prompt user to buy editor feature")
-                }
-            }
-            .buttonStyle(MainMenuButtonStyle())
-            .padding(.bottom, 10)
-            
-            SwiftUI.Button("Back") {
-                withAnimation { showLevelSelect = false }
-            }
-            .buttonStyle(MainMenuButtonStyle())
-            .padding()
-        }
-        .sheet(isPresented: $showEditor) {
-            if let bgImage = UIImage(named: "handshake") {
-                //VortexEditorView(background: bgImage)
-            } else {
-                Text("No background image found")
-            }
-        }
-        .navigationTitle("Select Level")
-        .onAppear {
-            tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
-        }
 
-        // MARK: - Level loading sheet
-        .sheet(item: $showLevel) { level in
+                Spacer()
+
+                Button("Back") { dismiss() }
+                    .padding(.bottom, 30)
+            }
+            .padding(.horizontal, 30)
+        }
+        .fullScreenCover(isPresented: $showGame) {
             GameView(
-                level: level,
+                level: levelToLoad ?? 0,
                 onExit: {
-                    showLevel = nil
-                    showLevelSelect = true
+                    showGame = false
                 },
                 onHoleCompleted: {
-                    handleLevelCompletion(level: level)
+                    unlockNextLevel()
                 }
             )
         }
     }
 
-    // MARK: - Unlock Logic
-    private func handleLevelCompletion(level: Int) {
-        // Tutorial special handling
-        if level == 0 {
-            UserDefaults.standard.set(true, forKey: "TutorialCompleted")
-            UserDefaults.standard.set(1, forKey: "MaxLevelCompleted")
-        }
-
-        // Unlock next level
-        let currentMax = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
-        if level >= currentMax {
-            UserDefaults.standard.set(level + 1, forKey: "MaxLevelCompleted")
-        }
-
-        // Close level and return to LevelSelect
-        withAnimation {
-            showLevel = nil
-            showLevelSelect = true
-        }
+    private func unlockNextLevel() {
+        guard let level = levelToLoad else { return }
+        completedLevels.insert(level + 1)
     }
-    
-    // MARK: - Unlock Logic
-    private func isUnlocked(level: Int) -> Bool {
-        switch level {
-        case 0:
-            return true
-        case 1:
-            return UserDefaults.standard.bool(forKey: "TutorialCompleted") // Marbles unlocked after tutorial
-        default:
-            let maxCompleted = UserDefaults.standard.integer(forKey: "MaxLevelCompleted")
-            return level <= maxCompleted // sequential unlock for other levels
-        }
-    }
-}
-
-
-struct LevelButton: View {
-    var levelName: String
-    var unlocked: Bool
-    var action: () -> Void
-
-    var body: some View {
-        Button(action: { if unlocked { action() } }) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(unlocked ? Color.blue : Color.gray)
-                    .frame(height: 80)
-                if unlocked {
-                    Text(levelName)
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.white)
-                } else {
-                    Image(systemName: "lock.fill")
-                        .font(.title)
-                        .foregroundColor(.white)
-                }
-            }
-        }
-        .disabled(!unlocked)
-    }
-}
-
-extension Int: @retroactive Identifiable {
-    public var id: Int { self }
 }

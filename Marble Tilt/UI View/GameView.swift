@@ -8,89 +8,40 @@
 
 import SwiftUI
 import SpriteKit
-import CoreGraphics
 
 struct GameView: View {
-    var level: Int
-    var onExit: () -> Void
-    var onHoleCompleted: () -> Void
+    let level: Int
+    let onExit: () -> Void
+    let onHoleCompleted: () -> Void
 
-    // Keep a Scene reference so we can size it to the view if needed
-    @State private var scene: GameScene = GameScene(size: CGSize(width: 1024, height: 768))
+    @State private var scene = GameScene(size: CGSize(width: 800, height: 1400))
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            // SpriteKit view: use .resizeFill so the scene fills the SwiftUI view
+        ZStack {
             SpriteView(scene: scene)
                 .ignoresSafeArea()
-                .onAppear {
-                   // configureScene()
-                }
-//            GameOverlayView(viewModel: GameOverlayViewModel(scene: scene, paidFeatureUnlocked: false))
 
-            // Floating back button (game-like)
             VStack {
                 HStack {
-                    Button(action: {
-                        onExit()
-                    }) {
-                        Image(systemName: "arrow.left.circle.fill")
-                            .resizable()
-                            .frame(width: 44, height: 44)
+                    Button(action: { onExit() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 40))
                             .foregroundColor(.white)
-                            .shadow(radius: 4)
-                            .padding(8)
+                            .shadow(radius: 10)
                     }
                     Spacer()
                 }
+                .padding()
+
                 Spacer()
             }
-            .padding(.top, 40)
-            .padding(.leading, 8)
+        }
+        .onAppear {
+            scene.scaleMode = .resizeFill
+            scene.levelCompleted = {
+                onHoleCompleted()
+            }
+            scene.loadLevel(level)
         }
     }
-    
-//    // MARK: - Scene Configuration
-//     private func configureScene() {
-//
-//         switch level {
-//
-//         case 0: // Tutorial
-//             let tutorialMarbles = [CGPoint(x: 100, y: 300)]
-//             let tutorialVortexes = [CGPoint(x: 200, y: 200)]
-//
-//             scene.tutorialManager = TutorialManager(
-//                 scene: scene,
-//                 marblePositions: tutorialMarbles,
-//                 vortexPositions: tutorialVortexes
-//             ) {
-//                 // Tutorial completed: load main level marbles
-//                 let mainMarbles = LevelLoader.loadMarblesPositions(
-//                     file: "marble_positions_handshake_scaled_ipad"
-//                 )
-//                 scene.spawnMarbles(from: mainMarbles)
-//
-//                 onHoleCompleted()
-//             }
-//
-//             scene.tutorialManager?.startTutorial()
-//
-//         default:
-//             // Normal level loading
-//             let marblePositions = LevelLoader.loadMarblesPositions(
-//                 file: "level\(level)_marbles"
-//             )
-//             let vortexPositions = LevelLoader.loadVortexes(
-//                 file: "level\(level)_vortexes"
-//             )
-//
-//             if marblePositions.isEmpty {
-//                 scene.spawnRandomMarbles(count: 5)
-//             } else {
-//                 scene.spawnMarbles(from: marblePositions)
-//             }
-//
-//             scene.setupVortexes(positions: vortexPositions)
-//         }
-//     }
 }

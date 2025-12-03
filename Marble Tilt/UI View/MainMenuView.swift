@@ -9,7 +9,7 @@ import SwiftUI
 struct MainMenuView: View {
     @State private var showHelp = false
     @State private var showInfo = false
-    @State private var showLevelSelect = false  // NEW: level select page
+    @State private var showLevels = false
     @State private var selectedLevel: Int? = nil
     
     @State private var tutorialCompleted =
@@ -18,43 +18,44 @@ struct MainMenuView: View {
     var body: some View {
         ZStack {
             // MARK: - Main Menu
+//            Image("menuBackground")
+//                .resizable()
+//                .scaledToFill()
+//                .ignoresSafeArea()
+
             VStack(spacing: 20) {
                 Text("Welcome to Marble Tilt")
-                    .font(.largeTitle)
-                    .bold()
-                
+                    .font(.system(size: 48, weight: .heavy))
+                    .foregroundColor(.white)
+                    .shadow(radius: 10)
+
                 Button("Select Level") {
-                    withAnimation { showLevelSelect = true }
+                    withAnimation { showLevels = true }
                 }
-                .buttonStyle(MainMenuButtonStyle())
+                .mainMenuButtonStyle()
                 
                 Button("Help") { showHelp = true }
-                    .buttonStyle(MainMenuButtonStyle())
+                    .mainMenuButtonStyle()
                 
                 Button("About Us") { showInfo = true }
-                    .buttonStyle(MainMenuButtonStyle())
+                    .mainMenuButtonStyle()
                 }
             .transition(.opacity)
         }
         .sheet(isPresented: $showHelp) { HelpView() }
         .sheet(isPresented: $showInfo) { AboutUsView() }
-        .sheet(isPresented: $showLevelSelect) {
-            LevelSelectView(
-                showLevel: $selectedLevel,
-                showLevelSelect: $showLevelSelect
-            )
+        .sheet(isPresented: $showLevels) {
+            LevelSelectView()
         }
     }
 }
 
-struct MainMenuButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.title2)
-            .frame(minWidth: 220, minHeight: 50)
-            .background(configuration.isPressed ? Color.blue.opacity(0.7) : Color.blue)
+extension Button {
+    func mainMenuButtonStyle() -> some View {
+        self.frame(width: 200, height: 50)
+            .background(Color.blue.opacity(0.8))
             .foregroundColor(.white)
             .cornerRadius(12)
-            .padding(.horizontal)
+            .shadow(radius: 8)
     }
 }

@@ -9,12 +9,17 @@ import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
 
+    
     // MARK: - Properties
     var marbles: [MarbleNode] = []
     var vortexNodes: [VortexNode] = []
     var sunkMarbles: [SKNode] = []
-
+    var isTutorial = false    // injected from SwiftUI
+    
     private var selectedVortex: VortexNode?
+
+    // MARK: - Callbacks
+    var levelCompleted: (() -> Void)?
 
     // Loaded from LevelLoader
     var targetPositions: [CGPoint] = []
@@ -22,6 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: - Scene Setup
     override func didMove(to view: SKView) {
         print("✅ GameScene Loaded")
+        print("🟢 didMove START")
 
         backgroundColor = .black
 
@@ -78,6 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     // MARK: - Update Loop
     override func update(_ currentTime: TimeInterval) {
+        print("🔵 update tick")
 
         // Tilt movement
         if let acc = MotionManager.shared.currentAcceleration() {
@@ -167,5 +174,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         print("🗑 Removed \(sunkMarbles.count) marbles")
         sunkMarbles.removeAll()
+    }
+    
+    // Call this when the current level is beaten:
+    func completeLevel() {
+        print("🏁 Level Completed")
+        levelCompleted?()
+    }
+
+}
+extension GameScene {
+    func loadLevel(_ level: Int) {
+
+        print("🔵 Loading level \(level)")
+
+        removeAllChildren()
+        removeAllActions()
+
+        // Example: add your background
+        if let bg = SKSpriteNode(imageNamed: "handshake") as SKSpriteNode? {
+            bg.position = CGPoint(x: size.width/2, y: size.height/2)
+            bg.zPosition = -10
+            addChild(bg)
+        }
+
+        /// Example: load marbles / vortexes later
+        // spawnMarbles(from: ...)
+        // setupVortexes(positions: ...)
     }
 }
