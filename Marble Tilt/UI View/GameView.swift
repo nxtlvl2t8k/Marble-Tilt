@@ -24,9 +24,9 @@ struct GameView: View {
             SpriteView(scene: scene)
                 .ignoresSafeArea()
                 .onAppear {
-                    configureScene()
+                   // configureScene()
                 }
-            GameOverlayView(viewModel: GameOverlayViewModel(scene: scene, paidFeatureUnlocked: false))
+//            GameOverlayView(viewModel: GameOverlayViewModel(scene: scene, paidFeatureUnlocked: false))
 
             // Floating back button (game-like)
             VStack {
@@ -50,40 +50,47 @@ struct GameView: View {
         }
     }
     
-    // MARK: - Scene Configuration
-    private func configureScene() {
-        switch level {
-        case 0: // Tutorial
-            let tutorialMarbles = [CGPoint(x: 100, y: 300)]
-            let tutorialVortexes = [CGPoint(x: 200, y: 200)]
-
-            scene.tutorialManager = TutorialManager(
-                scene: scene,
-                marblePositions: tutorialMarbles,
-                vortexPositions: tutorialVortexes
-            ) {
-                // Tutorial completed: spawn main marbles
-                let mainMarbles = LevelLoader.loadMarbles(file: "marble_positions_handshake_scaled_ipad")
-                scene.spawnMarbles(from: mainMarbles)
-
-                // Notify SwiftUI
-                onHoleCompleted()
-            }
-
-            scene.tutorialManager?.startTutorial()
-
-        default:
-            // Normal level: load from JSON
-            let marblePositions = LevelLoader.loadMarbles(file: "level\(level)_marbles")
-            let vortexPositions = LevelLoader.loadVortexes(file: "level\(level)_vortexes")
-
-            if marblePositions.isEmpty {
-                scene.spawnRandomMarbles(count: 5)
-            } else {
-                scene.spawnMarbles(from: marblePositions)
-            }
-
-            scene.setupVortexes(positions: vortexPositions)
-        }
-    }
+//    // MARK: - Scene Configuration
+//     private func configureScene() {
+//
+//         switch level {
+//
+//         case 0: // Tutorial
+//             let tutorialMarbles = [CGPoint(x: 100, y: 300)]
+//             let tutorialVortexes = [CGPoint(x: 200, y: 200)]
+//
+//             scene.tutorialManager = TutorialManager(
+//                 scene: scene,
+//                 marblePositions: tutorialMarbles,
+//                 vortexPositions: tutorialVortexes
+//             ) {
+//                 // Tutorial completed: load main level marbles
+//                 let mainMarbles = LevelLoader.loadMarblesPositions(
+//                     file: "marble_positions_handshake_scaled_ipad"
+//                 )
+//                 scene.spawnMarbles(from: mainMarbles)
+//
+//                 onHoleCompleted()
+//             }
+//
+//             scene.tutorialManager?.startTutorial()
+//
+//         default:
+//             // Normal level loading
+//             let marblePositions = LevelLoader.loadMarblesPositions(
+//                 file: "level\(level)_marbles"
+//             )
+//             let vortexPositions = LevelLoader.loadVortexes(
+//                 file: "level\(level)_vortexes"
+//             )
+//
+//             if marblePositions.isEmpty {
+//                 scene.spawnRandomMarbles(count: 5)
+//             } else {
+//                 scene.spawnMarbles(from: marblePositions)
+//             }
+//
+//             scene.setupVortexes(positions: vortexPositions)
+//         }
+//     }
 }

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		D57C3F6A273792DC00FDB95B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D57C3F69273792DC00FDB95B /* Assets.xcassets */; };
 		D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3293F2E40B72600C65E36 /* MarblesApp.swift */; };
+		D5A44E332EDDAE2D00447D9D /* MarblePosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A44E322EDDAE2D00447D9D /* MarblePosition.swift */; };
+		D5A44F612EDFD2C500447D9D /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A44F602EDFD2C500447D9D /* MotionManager.swift */; };
 		D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BF2C052E447AE700A8991A /* GameViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -17,6 +19,8 @@
 		D57C3F69273792DC00FDB95B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D57C3F7527380DAB00FDB95B /* Marble-Tilt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Marble-Tilt-Info.plist"; sourceTree = SOURCE_ROOT; };
 		D5A3293F2E40B72600C65E36 /* MarblesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblesApp.swift; sourceTree = "<group>"; };
+		D5A44E322EDDAE2D00447D9D /* MarblePosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarblePosition.swift; sourceTree = "<group>"; };
+		D5A44F602EDFD2C500447D9D /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
 		D5BF2C052E447AE700A8991A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +80,8 @@
 		D5A44D842EDA93CD00447D9D /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				D5A44E322EDDAE2D00447D9D /* MarblePosition.swift */,
+				D5A44F602EDFD2C500447D9D /* MotionManager.swift */,
 				D5BF2C052E447AE700A8991A /* GameViewController.swift */,
 			);
 			path = Models;
@@ -158,8 +164,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5A44F612EDFD2C500447D9D /* MotionManager.swift in Sources */,
 				D5BF2C0D2E447AE700A8991A /* GameViewController.swift in Sources */,
 				D5A329402E40B72600C65E36 /* MarblesApp.swift in Sources */,
+				D5A44E332EDDAE2D00447D9D /* MarblePosition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

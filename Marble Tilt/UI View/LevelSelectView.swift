@@ -54,7 +54,7 @@ struct LevelSelectView: View {
         }
         .sheet(isPresented: $showEditor) {
             if let bgImage = UIImage(named: "handshake") {
-                VortexEditorView(background: bgImage)
+                //VortexEditorView(background: bgImage)
             } else {
                 Text("No background image found")
             }

@@ -9,29 +9,42 @@
 import SpriteKit
 
 class VortexNode: SKSpriteNode {
-    
-    init(position: CGPoint, size: CGSize = CGSize(width: 70, height: 70)) {
-        let texture = SKTexture(imageNamed: "vortex")
-        super.init(texture: texture, color: .clear, size: size)
-        self.position = position
-        self.name = "vortex"
-        self.zPosition = 1
-        self.setupPhysics()
-        self.startRotation()
+
+    static func create(at position: CGPoint) -> VortexNode {
+        let node = VortexNode(imageNamed: "vortex")
+        node.name = "vortex"
+        node.position = position
+        node.zPosition = 1
+        node.setScale(0.5)
+
+        node.setupPhysics()
+        node.startSpin()
+
+        return node
     }
-    
-    required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
-    
+
+    func startSpin() {
+        let spin = SKAction.rotate(byAngle: .pi, duration: 1)
+        run(SKAction.repeatForever(spin))
+    }
+
+    func refreshAnimation() {
+        removeAllActions()
+        startSpin()
+
+        let flash = SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.5, duration: 0.1),
+            SKAction.fadeAlpha(to: 1.0, duration: 0.1)
+        ])
+        run(SKAction.repeat(flash, count: 2))
+    }
+
     private func setupPhysics() {
-        let radius = size.width * 0.4
+        let radius = (size.width * 0.5) * 0.4
         physicsBody = SKPhysicsBody(circleOfRadius: radius)
         physicsBody?.isDynamic = false
         physicsBody?.categoryBitMask = 1 << 1
         physicsBody?.contactTestBitMask = 1 << 0
         physicsBody?.collisionBitMask = 0
-    }
-    
-    private func startRotation() {
-        run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
     }
 }
