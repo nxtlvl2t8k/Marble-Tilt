@@ -17,12 +17,12 @@ class EditorGameScene: GameScene {
         self.saveHandler = saveHandler
     }
 
-    func collectVortexPositions() -> [CGPoint] {
-        return vortexNodes.map { $0.position }
-    }
+//    func collectVortexPositions() -> [CGPoint] {
+//        return VortexNode.map { $0.position }
+//    }
 
-    func saveChanges() {
-        let positions = collectVortexPositions()
-        saveHandler?(positions)
-    }
+//    func saveChanges() {
+//        let positions = collectVortexPositions()
+//        saveHandler?(positions)
+//    }
 }

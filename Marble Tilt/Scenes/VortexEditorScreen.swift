@@ -31,8 +31,8 @@ struct VortexEditorScreen: View {
 
                 Button("Save") {
                     if let scene = scene {
-                        let points = scene.collectVortexPositions()
-                        saveToJSON(points)
+                        //let points = scene.collectVortexPositions()
+                        //saveToJSON(points)
                     }
                     dismiss()
                 }

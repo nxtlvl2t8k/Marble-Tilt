@@ -6,45 +6,35 @@
 //
 
 
+// VortexNode.swift
 import SpriteKit
 
 class VortexNode: SKSpriteNode {
-
-    static func create(at position: CGPoint) -> VortexNode {
-        let node = VortexNode(imageNamed: "vortex")
-        node.name = "vortex"
-        node.position = position
-        node.zPosition = 1
-        node.setScale(0.5)
-
-        node.setupPhysics()
-        node.startSpin()
-
-        return node
+    let index: Int
+    init(index: Int = 0) {
+        self.index = index
+        let texture = SKTexture(imageNamed: "vortex")
+        super.init(texture: texture, color: .clear, size: texture.size())
+        name = "vortex"
+        zPosition = 1
+        setScale(0.5)
+        setupPhysics()
+        resetAnimation()
     }
 
-    func startSpin() {
-        let spin = SKAction.rotate(byAngle: .pi, duration: 1)
-        run(SKAction.repeatForever(spin))
-    }
-
-    func refreshAnimation() {
-        removeAllActions()
-        startSpin()
-
-        let flash = SKAction.sequence([
-            SKAction.fadeAlpha(to: 0.5, duration: 0.1),
-            SKAction.fadeAlpha(to: 1.0, duration: 0.1)
-        ])
-        run(SKAction.repeat(flash, count: 2))
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) not supported") }
 
     private func setupPhysics() {
-        let radius = (size.width * 0.5) * 0.4
-        physicsBody = SKPhysicsBody(circleOfRadius: radius)
+        let r = max(8, (size.width * 0.5) * 0.4)
+        physicsBody = SKPhysicsBody(circleOfRadius: r)
         physicsBody?.isDynamic = false
         physicsBody?.categoryBitMask = 1 << 1
-        physicsBody?.contactTestBitMask = 1 << 0
-        physicsBody?.collisionBitMask = 0
+        physicsBody?.contactTestBitMask = 1 << 0 // detect marble proximity
+        physicsBody?.collisionBitMask = 0 // ❌ NO collision — marble will pass through
+    }
+
+    func resetAnimation() {
+        removeAllActions()
+        run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi * 2, duration: 2)))
     }
 }

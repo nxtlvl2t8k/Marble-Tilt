@@ -39,13 +39,13 @@ struct GameView: View {
         .onAppear {
             scene.scaleMode = .resizeFill
 
-            // ✅ Level completion callback
-            scene.levelCompleted = {
-                onHoleCompleted()
-            }
+//            // ✅ Level completion callback
+//            scene.levelCompleted = {
+//                onHoleCompleted()
+//            }
 
             // ✅ LOAD THE ACTUAL LEVEL NOW
-            scene.loadLevel(level)
+            scene.loadLevel(2)
         }
     }
 }
