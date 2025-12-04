@@ -45,7 +45,7 @@ struct GameView: View {
 //            }
 
             // ✅ LOAD THE ACTUAL LEVEL NOW
-            scene.loadLevel(2)
+            GameScene.loadLevel(levelNumber: 1)
         }
     }
 }

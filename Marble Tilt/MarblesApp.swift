@@ -11,8 +11,12 @@ struct MarblesApp: App {
     var body: some Scene {
         WindowGroup {
             //PatternEditorView()
-            //GameView()
-            MainMenuView()
+            GameView(
+                level: 1,
+                onExit: { print("Exit pressed") },
+                onHoleCompleted: { print("Hole completed!") }
+            )
+            //MainMenuView()
             //MainMarbleView()
             //MainGolfView()
         }

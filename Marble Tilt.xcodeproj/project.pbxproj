@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 73;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,12 +20,30 @@
 		D5BF2C052E447AE700A8991A /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D5A450082EE1F11D00447D9D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Extensions.swift,
+			);
+			target = D57C3F58273792DB00FDB95B /* Marble Tilt */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		D5A450092EE1F11D00447D9D /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D57C3F57273792DB00FDB95B /* Resources */;
+			membershipExceptions = (
+				Extensions.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D5A44D832EDA939B00447D9D /* UI View */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "UI View"; sourceTree = "<group>"; };
-		D5A44D852EDA957400447D9D /* Nodes */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Nodes; sourceTree = "<group>"; };
 		D5A44D8A2EDA95B200447D9D /* Scenes */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Scenes; sourceTree = "<group>"; };
-		D5A44D8D2EDA95D700447D9D /* Utilities */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Utilities; sourceTree = "<group>"; };
-		D5A44DA22EDAFB3300447D9D /* Editor */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Editor; sourceTree = "<group>"; };
+		D5A44DA22EDAFB3300447D9D /* Editor */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D5A450082EE1F11D00447D9D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, D5A450092EE1F11D00447D9D /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Editor; sourceTree = "<group>"; };
 		D5A44DA32EDB021400447D9D /* Resourses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resourses; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -62,9 +80,7 @@
 				D5A3293F2E40B72600C65E36 /* MarblesApp.swift */,
 				D5A44DA32EDB021400447D9D /* Resourses */,
 				D5A44DA22EDAFB3300447D9D /* Editor */,
-				D5A44D8D2EDA95D700447D9D /* Utilities */,
 				D5A44D8A2EDA95B200447D9D /* Scenes */,
-				D5A44D852EDA957400447D9D /* Nodes */,
 				D5A44D842EDA93CD00447D9D /* Models */,
 				D5A44D832EDA939B00447D9D /* UI View */,
 				D57C3F69273792DC00FDB95B /* Assets.xcassets */,
@@ -98,9 +114,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				D5A44D832EDA939B00447D9D /* UI View */,
-				D5A44D852EDA957400447D9D /* Nodes */,
 				D5A44D8A2EDA95B200447D9D /* Scenes */,
-				D5A44D8D2EDA95D700447D9D /* Utilities */,
 				D5A44DA22EDAFB3300447D9D /* Editor */,
 				D5A44DA32EDB021400447D9D /* Resourses */,
 			);
@@ -125,7 +139,6 @@
 				};
 			};
 			buildConfigurationList = D57C3F54273792DB00FDB95B /* Build configuration list for PBXProject "Marble Tilt" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -133,6 +146,7 @@
 				Base,
 			);
 			mainGroup = D57C3F50273792DB00FDB95B;
+			preferredProjectObjectVersion = 55;
 			productRefGroup = D57C3F5A273792DB00FDB95B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
