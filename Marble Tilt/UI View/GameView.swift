@@ -14,20 +14,12 @@ struct GameView: View {
     let onExit: () -> Void
     let onHoleCompleted: () -> Void
 
-    @State private var scene = GameScene(size: CGSize(width: 800, height: 1400))
+    @State private var scene = GameScene(size: CGSize(width: 1024, height: 768))
 
     var body: some View {
         ZStack {
-            SpriteView(scene: {
-                let scene = GameScene(size: CGSize(width: 1024, height: 768))
-                scene.tutorialMode = true
-                scene.onTutorialStageCompleted = {
-                    print("Tutorial Finished!")
-                    // Call GameView completion or show next level
-                }
-                return scene
-            }())
-            .ignoresSafeArea()
+            SpriteView(scene: scene)
+                .ignoresSafeArea()
             
             VStack {
                 HStack {
@@ -46,9 +38,13 @@ struct GameView: View {
         }
         .onAppear {
             scene.scaleMode = .resizeFill
+
+            // ✅ Level completion callback
             scene.levelCompleted = {
                 onHoleCompleted()
             }
+
+            // ✅ LOAD THE ACTUAL LEVEL NOW
             scene.loadLevel(level)
         }
     }
