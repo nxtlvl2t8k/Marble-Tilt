@@ -8,17 +8,25 @@ import SwiftUI
 
 @main
 struct MarblesApp: App {
+    @State private var showGame = false
+
     var body: some Scene {
         WindowGroup {
-            //PatternEditorView()
-            GameView(
-                level: 1,
-                onExit: { print("Exit pressed") },
-                onHoleCompleted: { print("Hole completed!") }
-            )
-            //MainMenuView()
-            //MainMarbleView()
-            //MainGolfView()
+            if showGame {
+                GameView(
+                    level: 1,
+                    onExit: {
+                        showGame = false   // ✅ BACK WORKS
+                    },
+                    onHoleCompleted: {
+                        print("Hole completed!")
+                    }
+                )
+            } else {
+                MainMenuView(startGame: {
+                    showGame = true      // ✅ FORWARD WORKS
+                })
+            }
         }
     }
 }

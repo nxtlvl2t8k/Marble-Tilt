@@ -8,6 +8,11 @@
 import SpriteKit
 import CoreMotion
 
+enum MarbleType: String {
+    case red
+    case grey
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var marbles: [SKSpriteNode] = []
@@ -24,7 +29,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var shakeThreshold: Double = 0.7 // Adjust to taste
     
     var vortices: [CGPoint] = []
-
+    var marbleVortexMap: [MarbleType: [SKSpriteNode]] = [:]
+    
     static func loadLevel(levelNumber: Int) -> GameScene {
         let scene = GameScene(size: CGSize(width: 1024, height: 768))
         scene.scaleMode = .aspectFill
@@ -71,23 +77,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addVortex(at: pos)
         }
         
-        //        //adds 1 vortex in the middle
-        //        addVortex(at: CGPoint(x: size.width / 2, y: size.height / 2))
+        // ✅ Assign vortexes to marble types AFTER adding them
+        marbleVortexMap[.red] = Array(vortexNodes[1...60])//[vortexNodes[0], vortexNodes[1]  // first 2 vortexes accept red marbles
+        marbleVortexMap[.grey] = Array(vortexNodes[61..<vortexNodes.count])   // third vortex accepts gold marbles
+            
+        // ⚪ Spawn marbles to match target pattern
+        //spawnMarbles(count: targetPositions.count)
+        //spawnMarbles(count: targetPositions.count, type: .red)
+        spawnMarbles(count: 61, type: .red)
+        spawnMarbles(count: 49, type: .grey)
         
+        if let randomVortex = vortexNodes.randomElement() {
+            selectedVortex = randomVortex
+            print("🎯 Special vortex chosen at \(randomVortex.position)")
+        }
+
         // 🌌 Add background image
         let background = SKSpriteNode(imageNamed: "crushnightclub.jpeg") // use your image name
         background.position = CGPoint(x: size.width / 2, y: size.height / 2)
         background.zPosition = -1
         background.size = size
         addChild(background)
-        
-        // ⚪ Spawn marbles to match target pattern
-        spawnMarbles(count: targetPositions.count)
-        
-        if let randomVortex = vortexNodes.randomElement() {
-            selectedVortex = randomVortex
-            print("🎯 Special vortex chosen at \(randomVortex.position)")
-        }
     }
     
     func loadTargetPattern() {
@@ -128,11 +138,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(vortex)
     }
     
-    func spawnMarbles(count: Int) {
+    func spawnMarbles(count: Int, type: MarbleType) {
         for _ in 0..<count {
             //let marble = createGoldMarble(size: CGSize(width: 24, height: 24))
-            let marble = SKSpriteNode(imageNamed: "ballGrey")
-            marble.name = "ballGrey"
+            let marble = SKSpriteNode(imageNamed: "ballGrey") // default texture
+            marble.name = "ball" // generic
+            marble.userData = ["type": type.rawValue] // store type
+            
+            // Optionally use textures for red/gold
+            switch type {
+            case .red:
+                marble.texture = SKTexture(imageNamed: "ballRed")
+            case .grey:
+                marble.texture = SKTexture(imageNamed: "ballGrey")
+            }
+
             marble.size = CGSize(width: 24, height: 24)
             marble.position = CGPoint(x: CGFloat.random(in: 0...size.width),
                                       y: CGFloat.random(in: 0...size.height))
@@ -144,6 +164,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.categoryBitMask = 1 << 0
             marble.physicsBody?.contactTestBitMask = 1 << 1 // to detect vortex
             marble.physicsBody?.collisionBitMask = 1 << 0 //0xFFFFFFFF // collide only with other things (like frame)
+            marble.userData = ["type": type.rawValue] // store type
             marbles.append(marble)
             addChild(marble)
         }
@@ -196,8 +217,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Golf-hole style sink logic
         for marble in marbles {
             guard marble.physicsBody?.isDynamic == true else { continue }
-            
+            guard let marbleTypeRaw = marble.userData?["type"] as? String,
+                  let marbleType = MarbleType(rawValue: marbleTypeRaw) else { continue }
+
             for vortex in vortexNodes {
+                if !(marbleVortexMap[marbleType]?.contains(vortex) ?? false) { continue }
+
                 let dx = vortex.position.x - marble.position.x
                 let dy = vortex.position.y - marble.position.y
                 let distance = sqrt(dx*dx + dy*dy)
@@ -221,7 +246,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         }
                     //}
                     //sunkMarbles.append(marble)
-                    print("⛳️ Marble sunk into vortex at \(vortex.position)")
+                    print("⛳️ \(marbleType.rawValue.capitalized) marble sunk into vortex at \(vortex.position)")
+//                    print("⛳️ Marble sunk into vortex at \(vortex.position)")
 //                      print("⛳️ Marble vissually sunk (no loss)")
 
                       if vortex == selectedVortex {

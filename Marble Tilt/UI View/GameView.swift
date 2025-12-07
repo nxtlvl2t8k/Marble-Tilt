@@ -14,7 +14,11 @@ struct GameView: View {
     let onExit: () -> Void
     let onHoleCompleted: () -> Void
 
-    @State private var scene = GameScene(size: CGSize(width: 1024, height: 768))
+    @State private var scene: GameScene = {
+        let newScene = GameScene(size: CGSize(width: 1024, height: 768))
+        newScene.scaleMode = .resizeFill
+        return newScene
+    }()
 
     var body: some View {
         ZStack {
@@ -37,15 +41,16 @@ struct GameView: View {
             }
         }
         .onAppear {
-            scene.scaleMode = .resizeFill
+            // ✅ PROPERLY LOAD AND DISPLAY THE LEVEL
+            let loadedScene = GameScene.loadLevel(levelNumber: level)
+            loadedScene.scaleMode = .resizeFill
 
-//            // ✅ Level completion callback
-//            scene.levelCompleted = {
+//            // ✅ If you re-enable this later
+//            loadedScene.levelCompleted = {
 //                onHoleCompleted()
 //            }
 
-            // ✅ LOAD THE ACTUAL LEVEL NOW
-            GameScene.loadLevel(levelNumber: 1)
+            scene = loadedScene   // ✅ THIS IS THE KEY FIX
         }
     }
 }

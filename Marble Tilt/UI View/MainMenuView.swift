@@ -6,15 +6,20 @@
 //
 import SwiftUI
 
+enum ActiveSheet: Identifiable {
+    case help, info, levels
+    var id: Int { hashValue }
+}
+
 struct MainMenuView: View {
+    var startGame: () -> Void
+    
     @State private var showHelp = false
     @State private var showInfo = false
     @State private var showLevels = false
-    @State private var selectedLevel: Int? = nil
-    
-    @State private var tutorialCompleted =
-    UserDefaults.standard.bool(forKey: "TutorialCompleted")
-    
+
+    @State private var activeSheet: ActiveSheet? = nil
+
     var body: some View {
         ZStack {
             // MARK: - Main Menu
@@ -29,23 +34,26 @@ struct MainMenuView: View {
                     .foregroundColor(.white)
                     .shadow(radius: 10)
 
-                Button("Select Level") {
-                    withAnimation { showLevels = true }
-                }
+                Button("Select Level") { activeSheet = .levels }
                 .mainMenuButtonStyle()
                 
-                Button("Help") { showHelp = true }
+                Button("Help") { activeSheet = .help }
                     .mainMenuButtonStyle()
                 
-                Button("About Us") { showInfo = true }
+                Button("About Us") { activeSheet = .info }
                     .mainMenuButtonStyle()
                 }
             .transition(.opacity)
         }
-        .sheet(isPresented: $showHelp) { HelpView() }
-        .sheet(isPresented: $showInfo) { AboutUsView() }
-        .sheet(isPresented: $showLevels) {
-            LevelSelectView()
+        .sheet(item: $activeSheet) { item in
+            switch item {
+            case .help:
+                HelpView()
+            case .info:
+                AboutUsView()
+            case .levels:
+                LevelSelectView()
+            }
         }
     }
 }

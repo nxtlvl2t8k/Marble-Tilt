@@ -30,7 +30,7 @@ struct LevelSelectView: View {
 
     var body: some View {
         ZStack {
-            Color.black.edgesIgnoringSafeArea(.all)
+            Color.black.ignoresSafeArea()
 //            Image("levelBackground")
 //                .resizable()
 //                .scaledToFill()
@@ -41,17 +41,18 @@ struct LevelSelectView: View {
                     .bold()
                     .padding(.top, 20)
 
-                ForEach(0..<5) { level in
-                    Button(action: {
+                ForEach(0..<levels.count, id: \.self) { level in
+                    Button {
                         if completedLevels.contains(level) {
                             levelToLoad = level
                             showGame = true
                         }
-                    }) {
+                    } label: {
                         HStack {
-                            Text(level == 0 ? "Tutorial" : "Level \(level)")
+                            Text(levels[level].name)
                                 .foregroundColor(.white)
                                 .font(.title3)
+
                             Spacer()
                             Image(systemName: completedLevels.contains(level)
                                   ? "lock.open"
