@@ -16,7 +16,7 @@ struct LevelSelectView: View {
     @State private var levelToLoad: Int? = nil
 //    @State private var tutorialCompleted = UserDefaults.standard.bool(forKey: "TutorialCompleted")
 //    @State private var showEditor = false
-    @State private var completedLevels: Set<Int> = [0,1,2] // tutorial unlocked
+    @State private var completedLevels: Set<Int> = [0,1,2,3,4,5] // tutorial unlocked
 
     // Only 3 levels: tutorial, main marbles, golf (locked)
     let levels = [
@@ -25,7 +25,8 @@ struct LevelSelectView: View {
         (id: 2, name: "Main Marbles", unlocked: true),
 //        (id: 2, name: "Main Marbles", unlocked: UserDefaults.standard.bool(forKey: "TutorialCompleted")),
         (id: 3, name: "Crush Nightclub", unlocked: false),
-        (id: 4, name: "Golf", unlocked: false)
+        (id: 4, name: "Golf", unlocked: false),
+        (id: 5, name: "Skool", unlocked: false)
     ]
 
     var body: some View {

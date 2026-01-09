@@ -5,10 +5,15 @@
 //  Created by Scott Mayhew on 2025-08-04.
 //
 import SwiftUI
+import SpriteKit
 
 @main
 struct MarblesApp: App {
     @State private var showGame = false
+
+    init() {
+        preloadLevelBackgrounds()
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -29,4 +34,20 @@ struct MarblesApp: App {
             }
         }
     }
+    
+    func preloadLevelBackgrounds() {
+        let textures = [
+            SKTexture(imageNamed: "level1_bg"),
+            SKTexture(imageNamed: "level2_bg"),
+            SKTexture(imageNamed: "handshake"),
+            SKTexture(imageNamed: "crushnightclub"),
+            SKTexture(imageNamed: "handshake"),
+            SKTexture(imageNamed: "skool")
+        ]
+
+        SKTexture.preload(textures) {
+            print("✅ All level backgrounds preloaded")
+        }
+    }
+
 }

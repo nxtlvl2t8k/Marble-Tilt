@@ -19,7 +19,7 @@ struct GameView: View {
         newScene.scaleMode = .resizeFill
         return newScene
     }()
-
+    
     var body: some View {
         ZStack {
             SpriteView(scene: scene)
@@ -40,7 +40,7 @@ struct GameView: View {
                 Spacer()
             }
         }
-        .onAppear {
+        .onAppear {            
             // ✅ PROPERLY LOAD AND DISPLAY THE LEVEL
             let loadedScene = GameScene.loadLevel(levelNumber: level)
             loadedScene.scaleMode = .resizeFill

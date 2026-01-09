@@ -23,7 +23,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var vortexNodes: [SKSpriteNode] = []
     var sunkMarbles: [SKNode] = []
     var originalMarbleTextures: [SKSpriteNode: SKTexture] = [:]
-
+    var levelNumber: Int = 1
+    
     private var selectedVortex: SKSpriteNode?
     private var lastAcceleration: CMAcceleration?
     private var shakeThreshold: Double = 0.7 // Adjust to taste
@@ -33,6 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     static func loadLevel(levelNumber: Int) -> GameScene {
         let scene = GameScene(size: CGSize(width: 1024, height: 768))
+        scene.levelNumber = levelNumber      // store the level
         scene.scaleMode = .aspectFill
         scene.loadVortexData(levelNumber: levelNumber)
         return scene
@@ -57,7 +59,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     override func didMove(to view: SKView) {
-        print("✅ GameScene2 loaded")
+        childNode(withName: "background")?.removeFromParent()
+        print("✅ GameScene loaded for level \(levelNumber)")
         
         backgroundColor = .black
         physicsWorld.gravity = CGVector(dx: 0, dy: -9.8)
@@ -77,23 +80,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addVortex(at: pos)
         }
         
-        // ✅ Assign vortexes to marble types AFTER adding them
-        marbleVortexMap[.red] = Array(vortexNodes[1...60])//[vortexNodes[0], vortexNodes[1]  // first 2 vortexes accept red marbles
-        marbleVortexMap[.grey] = Array(vortexNodes[61..<vortexNodes.count])   // third vortex accepts gold marbles
+//        // ✅ Assign vortexes to marble types AFTER adding them
+//        marbleVortexMap[.red] = Array(vortexNodes[1...60])//[vortexNodes[0], vortexNodes[1]  // first 2 vortexes accept red marbles
+//        marbleVortexMap[.grey] = Array(vortexNodes[61..<vortexNodes.count])   // third vortex accepts gold marbles
             
-        // ⚪ Spawn marbles to match target pattern
-        //spawnMarbles(count: targetPositions.count)
-        //spawnMarbles(count: targetPositions.count, type: .red)
-        spawnMarbles(count: 61, type: .red)
-        spawnMarbles(count: 49, type: .grey)
+         //⚪ Spawn marbles to match target pattern
+        spawnMarbles(count: targetPositions.count)
+//        spawnMarbles(count: targetPositions.count, type: .red)
+//        spawnMarbles(count: 61, type: .red)
+//        spawnMarbles(count: 49, type: .grey)
         
         if let randomVortex = vortexNodes.randomElement() {
             selectedVortex = randomVortex
             print("🎯 Special vortex chosen at \(randomVortex.position)")
         }
 
+        // Set background image based on level
+        let backgroundImageName: String
+        switch levelNumber {
+        case 0:
+            backgroundImageName = "level1_bg"
+        case 1:
+            backgroundImageName = "level2_bg"
+        case 2:
+            backgroundImageName = "handshake"
+        case 3:
+            backgroundImageName = "crushnightclub"
+        case 4:
+            backgroundImageName = "backgound"
+        case 5:
+            backgroundImageName = "skool"
+        default:
+            backgroundImageName = "background"
+        }
+
         // 🌌 Add background image
-        let background = SKSpriteNode(imageNamed: "crushnightclub.jpeg") // use your image name
+        let background = SKSpriteNode(imageNamed: backgroundImageName) // use your image name
+        background.name = "background"
         background.position = CGPoint(x: size.width / 2, y: size.height / 2)
         background.zPosition = -1
         background.size = size
@@ -101,8 +124,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func loadTargetPattern() {
+        let filename: String
+        switch levelNumber {
+        case 0: filename = "level1_ipad"
+        case 1: filename = "level2_ipad"
+        case 2: filename = "marble_positions_handshake_scaled_ipad"
+        case 3: filename = "crushnightclub_ipad"
+        case 4: filename = "background"
+        case 5: filename = "skool_ipad"
+        default: filename = "background"
+        }
         
-        if let url = Bundle.main.url(forResource: "crushnightclub_ipad", withExtension: "json") {
+        if let url = Bundle.main.url(forResource: filename, withExtension: "json") {
             print("📄 Found file at: \(url)")
             do {
                 let data = try Data(contentsOf: url)
@@ -138,20 +171,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(vortex)
     }
     
-    func spawnMarbles(count: Int, type: MarbleType) {
+    func spawnMarbles(count: Int) { //, type: MarbleType) {
         for _ in 0..<count {
             //let marble = createGoldMarble(size: CGSize(width: 24, height: 24))
             let marble = SKSpriteNode(imageNamed: "ballGrey") // default texture
-            marble.name = "ball" // generic
-            marble.userData = ["type": type.rawValue] // store type
+            marble.name = "ballGrey" // generic
+//            marble.userData = ["type": type.rawValue] // store type
             
             // Optionally use textures for red/gold
-            switch type {
-            case .red:
-                marble.texture = SKTexture(imageNamed: "ballRed")
-            case .grey:
-                marble.texture = SKTexture(imageNamed: "ballGrey")
-            }
+//            switch type {
+//            case .red:
+//                marble.texture = SKTexture(imageNamed: "ballRed")
+//            case .grey:
+//                marble.texture = SKTexture(imageNamed: "ballGrey")
+//            }
 
             marble.size = CGSize(width: 24, height: 24)
             marble.position = CGPoint(x: CGFloat.random(in: 0...size.width),
@@ -164,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             marble.physicsBody?.categoryBitMask = 1 << 0
             marble.physicsBody?.contactTestBitMask = 1 << 1 // to detect vortex
             marble.physicsBody?.collisionBitMask = 1 << 0 //0xFFFFFFFF // collide only with other things (like frame)
-            marble.userData = ["type": type.rawValue] // store type
+//            marble.userData = ["type": type.rawValue] // store type
             marbles.append(marble)
             addChild(marble)
         }
